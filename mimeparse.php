@@ -4,17 +4,17 @@
  * handle matching mime-types against a list of media-ranges. See section
  * 14.1 of the HTTP specification [RFC 2616] for a complete explanation. 
  * 
- * It's just port to php from original
+ * It's just a port to php from original
  * Python code (http://code.google.com/p/mimeparse/)
  * @author Joe Gregario, Andrew "Venom" K.
  * 
- * ported from version 0.1.1
+ * ported from version 0.1.2
  * 
  * Comments are mostly excerpted from the original.
  */
 class Mimeparse {        
     /**
-     * Carves up a mime_type and returns an Array of the [type, subtype, params] 
+     * Carves up a mime-type and returns an Array of the [type, subtype, params] 
      * where "params" is a Hash of all the parameters for the media range.
      *
      * For example, the media range "application/xhtml;q=0.5" would
@@ -35,9 +35,15 @@ class Mimeparse {
             $params[$k] = $v;
         }
       }
-    
-      list ($type, $subtype) = explode('/', $parts[0]);
-      if (!$subtype) throw ("malformed mime type");
+
+      $full_type = trim($parts[0]);
+      /* Java URLConnection class sends an Accept header that includes a single "*"
+         Turn it into a legal wildcard. */
+      if ($full_type == '*') {
+          $full_type = '*/*';
+      }
+      list ($type, $subtype) = explode('/', $full_type);
+      if (!$subtype) throw (new Exception("malformed mime type"));
     
       return array(trim($type), trim($subtype), $params);
     }
@@ -71,35 +77,34 @@ class Mimeparse {
     }
     
     /**
-     * Find the best match for a given mime_type against a list of
+     * Find the best match for a given mime-type against a list of
      * media_ranges that have already been parsed by Mimeparser::parse_media_range()
      *
-     * Returns the "q" quality parameter of the best match, 0 if no match
-     * was found. This function behaves the same as Mimeparser::quality() except that
+     * Returns the fitness and the "q" quality parameter of the best match, or an
+     * array [-1, 0] if no match was found. Just as for Mimeparser::quality(),
      * "parsed_ranges" must be an Enumerable of parsed media ranges. 
      *
      * @param string $mime_type
      * @param array  $parsed_ranges
-     * @return float $best_fit_q
+     * @return array ($best_fitness, $best_fit_q)
      */
-    public function quality_parsed($mime_type, $parsed_ranges) {
+    public function fitness_and_quality_parsed($mime_type, $parsed_ranges) {
       $best_fitness = -1;
-      $best_match   = "";
       $best_fit_q   = 0;
       list ($target_type, $target_subtype, $target_params) = $this->parse_media_range($mime_type);
     
       foreach ($parsed_ranges as $item) {
         list ($type, $subtype, $params) = $item;
 
-        $param_matches = 0;
-        foreach ($target_params as $k=>$v) {
-            if ($k != 'q' && isset($params[$k]) && $v == $params[$k])
-                $param_matches++;
-        }
-        
         if (($type == $target_type or $type == "*" or $target_type == "*") &&
             ($subtype == $target_subtype or $subtype == "*" or $target_subtype == "*")) {
     
+          $param_matches = 0;
+          foreach ($target_params as $k=>$v) {
+            if ($k != 'q' && isset($params[$k]) && $v == $params[$k])
+              $param_matches++;
+          }
+        
           $fitness  = ($type == $target_type) ? 100 : 0;
           $fitness += ($subtype == $target_subtype) ? 10 : 0;
           $fitness += $param_matches;
@@ -111,11 +116,28 @@ class Mimeparse {
         }
       }
     
-      return (float) $best_fit_q;
+      return array( $best_fitness, (float) $best_fit_q );
     }
     
     /**
-     * Returns the quality "q" of a mime_type when compared against
+     * Find the best match for a given mime-type against a list of
+     * media_ranges that have already been parsed by Mimeparser::parse_media_range()
+     *
+     * Returns the "q" quality parameter of the best match, 0 if no match
+     * was found. This function behaves the same as Mimeparser::quality() except that
+     * "parsed_ranges" must be an Enumerable of parsed media ranges. 
+     *
+     * @param string $mime_type
+     * @param array  $parsed_ranges
+     * @return float $q
+     */
+    public function quality_parsed($mime_type, $parsed_ranges) {
+      list ($fitness, $q) = $this->fitness_and_quality_parsed($mime_type, $parsed_ranges);
+      return $q;
+    }
+    
+    /**
+     * Returns the quality "q" of a mime-type when compared against
      * the media-ranges in ranges. For example:
      *
      * Mimeparser::quality("text/html", "text/*;q=0.3, text/html;q=0.7, 
@@ -157,7 +179,7 @@ class Mimeparse {
       $weighted_matches = array();
       foreach ($supported as $mime_type) {
           $weighted_matches[] = array(
-            $this->quality_parsed($mime_type, $parsed_header),
+            $this->fitness_and_quality_parsed($mime_type, $parsed_header),
             $mime_type
           );
       }
@@ -165,22 +187,9 @@ class Mimeparse {
       array_multisort($weighted_matches);
 
       $a = $weighted_matches[ count($weighted_matches) - 1 ];
-      return ( empty( $a[0] ) ? null :  $a[1] );
+      return ( empty( $a[0][1] ) ? null :  $a[1] );
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -215,6 +224,12 @@ if ($m->parse_media_range("application/xml ; q=2;b=other") === array(0 => "appli
 else 
     echo "application/xml ; q=2;b=other - FAIL<br>";
     
+/* Java URLConnection class sends an Accept header that includes a single "*" */
+if ($m->parse_media_range(" *; q=.2") === array(0 => "*", 1=> "*", 2=> array("q" => ".2") ))
+    echo " *; q=.2 - OK<br>";
+else 
+    echo " *; q=.2 - FAIL<br>";
+    
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $accept = "text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5";
@@ -246,6 +261,13 @@ $supported_mime_types = array( "application/xbel+xml", "text/xml" );
 assert_best_match ("text/xml", "text/ *;q=0.5,* / *;q=0.1");
 # fail to match anything
 assert_best_match (null, "text/html,application/atom+xml; q=0.9" );
+# common AJAX scenario
+$supported_mime_types = array( "application/json", "text/html" );
+assert_best_match("application/json", "application/json, text/javascript, */*");
+# verify fitness sorting
+$supported_mime_types = array( "application/json", "text/html" );
+assert_best_match("application/json", "application/json, text/html;q=0.9");
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 $supported_mime_types = array('image/*', 'application/xml');
@@ -262,4 +284,3 @@ function assert_best_match($expected, $header) {
     else 
         echo "$header - FAIL<br>";
 }
-

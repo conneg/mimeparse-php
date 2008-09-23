@@ -11,14 +11,14 @@
 # This is a port of Joe Gregario's mimeparse.py, which can be found at 
 #   <http://code.google.com/p/mimeparse/>.
 #
-# ported from version 0.1.1
+# ported from version 0.1.2
 #
 # Comments are mostly excerpted from the original.
 
 module MIMEParse
   module_function
 
-# Carves up a mime_type and returns an Array of the
+# Carves up a mime-type and returns an Array of the
 #  [type, subtype, params] where "params" is a Hash of all
 #  the parameters for the media range.
 #
@@ -36,7 +36,11 @@ def parse_mime_type(mime_type)
     params[k] = v
   end
 
-  type, subtype = parts[0].split("/")
+  full_type = parts[0].strip
+  # Java URLConnection class sends an Accept header that includes a single "*"
+  # Turn it into a legal wildcard.
+  full_type = "*/*" if full_type == "*"
+  type, subtype = full_type.split("/")
   raise "malformed mime type" unless subtype
 
   [type.strip, subtype.strip, params]
@@ -63,23 +67,21 @@ def parse_media_range(range)
   [type, subtype, params]
 end
 
-# Find the best match for a givven mime_type against a list of
+# Find the best match for a given mime-type against a list of
 #  media_ranges that have already been parsed by #parse_media_range
 #
-# Returns the "q" quality parameter of the best match, 0 if no match
-#  was found. This function behaves the same as #quality except that
+# Returns the fitness and the "q" quality parameter of the best match,
+#  or [-1, 0] if no match was found. Just as for #quality_parsed,
 #  "parsed_ranges" must be an Enumerable of parsed media ranges.
-def quality_parsed(mime_type, parsed_ranges)
+def fitness_and_quality_parsed(mime_type, parsed_ranges)
   best_fitness = -1
-  best_match = ""
   best_fit_q = 0
   target_type, target_subtype, target_params = parse_media_range(mime_type)
 
   parsed_ranges.each do |type,subtype,params|
-    param_matches = target_params.find_all { |k,v| k != "q" and params.has_key?(k) and v == params[k] }.length
-
     if (type == target_type or type == "*" or target_type == "*") and
         (subtype == target_subtype or subtype == "*" or target_subtype == "*")
+      param_matches = target_params.find_all { |k,v| k != "q" and params.has_key?(k) and v == params[k] }.length
 
       fitness = (type == target_type) ? 100 : 0
       fitness += (subtype == target_subtype) ? 10 : 0
@@ -92,7 +94,17 @@ def quality_parsed(mime_type, parsed_ranges)
     end
   end
 
-  best_fit_q.to_f
+  [best_fitness, best_fit_q.to_f]
+end
+
+# Find the best match for a given mime-type against a list of
+#  media_ranges that have already been parsed by #parse_media_range
+#
+# Returns the "q" quality parameter of the best match, 0 if no match
+#  was found. This function behaves the same as #quality except that
+#  "parsed_ranges" must be an Enumerable of parsed media ranges.
+def quality_parsed(mime_type, parsed_ranges)
+  fitness_and_quality_parsed(mime_type, parsed_ranges)[1]
 end
 
 # Returns the quality "q" of a mime_type when compared against
@@ -116,12 +128,12 @@ def best_match(supported, header)
   parsed_header = header.split(",").map { |r| parse_media_range(r) }
 
   weighted_matches = supported.map do |mime_type|
-    [quality_parsed(mime_type, parsed_header), mime_type]
+    [fitness_and_quality_parsed(mime_type, parsed_header), mime_type]
   end
 
   weighted_matches.sort!
 
-  weighted_matches.last[0].zero? ? nil : weighted_matches.last[1]
+  weighted_matches.last[0][1].zero? ? nil : weighted_matches.last[1]
 end
 end
 
@@ -146,6 +158,10 @@ if __FILE__ == $0
 
       assert_equal [ "application", "xml", { "q" => "1", "b" => "other" } ],
                     parse_media_range("application/xml ; q=2;b=other")
+
+      # Java URLConnection class sends an Accept header that includes a single "*"
+      assert_equal [ "*", "*", { "q" => ".2" } ],
+                    parse_media_range(" *; q=.2")
     end
 
     def test_rfc_2616_example
@@ -178,6 +194,11 @@ if __FILE__ == $0
       assert_best_match "text/xml", "text/*;q=0.5,*/*;q=0.1"
       # fail to match anything
       assert_best_match nil, "text/html,application/atom+xml; q=0.9"
+      # common AJAX scenario
+      @supported_mime_types = [ "application/json", "text/html" ]
+      assert_best_match "application/json", "application/json, text/javascript, */*"
+      # verify fitness sorting
+      assert_best_match "application/json", "application/json, text/html;q=0.9"
     end
 
     def test_support_wildcards
