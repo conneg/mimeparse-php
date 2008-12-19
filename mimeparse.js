@@ -1,3 +1,20 @@
+// mimeparse.js
+// 
+// This module provides basic functions for handling mime-types. It can
+// handle matching mime-types against a list of media-ranges. See section
+// 14.1 of the HTTP specification [RFC 2616] for a complete explanation.
+//
+//   http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
+// 
+// A port to JavaScript of Joe Gregorio's MIME-Type Parser:
+// 
+//   http://code.google.com/p/mimeparse/
+// 
+// Ported by J. Chris Anderson <jchris@apache.org>, targeting the Spidermonkey runtime.
+// 
+// To run the tests, open mimeparse-js-test.html in a browser.
+// Ported from version 0.1.2
+// Comments are mostly excerpted from the original. 
 
 var Mimeparse = (function() {
   // private helpers
