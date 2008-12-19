@@ -151,7 +151,7 @@ var Mimeparse = (function() {
         weighted.push([publicMethods.fitnessAndQualityParsed(supported[i], parsedHeader), supported[i]])
       };
       weighted.sort();
-      console.log(weighted)
+      // console.log(weighted)
       return weighted[weighted.length-1][0][1] ? weighted[weighted.length-1][1] : '';
     }
   }
@@ -250,7 +250,7 @@ Mimeparse.runTests = function(outputFun) {
       }
       var testEnd = source.indexOf(");", testStart);
       var testCode = source.substring(testStart + testMarker.length, testEnd);
-      output += source.substring(i, testStart) + "T(" + testCode + ",'" + escape(testCode.toString())+"'";
+      output += source.substring(i, testStart) + "T(" + testCode + "," + JSON.stringify(testCode);
       i = testEnd;
     }
     try {
@@ -265,7 +265,7 @@ Mimeparse.runTests = function(outputFun) {
     if (arg1) {
       outputFun('<strong style="color:#0d0;">OK:</strong> <tt>'+message+'</tt>');
     } else {
-      console.log(arg2)
+      // console.log(arg2)
       outputFun('<strong style="color:#d00;">FAIL: <tt>'+message+'</tt></strong>');
     }
   }
@@ -273,9 +273,9 @@ Mimeparse.runTests = function(outputFun) {
   function equals(a,b) {
     if (a === b) return true;
     try {
-      console.log('equals')
-      console.log(repr(a))
-      console.log(repr(b))
+      // console.log('equals')
+      // console.log(repr(a))
+      // console.log(repr(b))
       return repr(a) === repr(b);
     } catch (e) {
       return false;
@@ -301,7 +301,7 @@ Mimeparse.runTests = function(outputFun) {
       testFun();
     } catch (e) {
       outputFun('<strong style="color:#f00;">ERROR: '+e.toString()+'</strong>');
-      console.log(e)
+      // console.log(e)
     }
   }
   outputFun("Finished tests.");
