@@ -12,6 +12,8 @@
  * 
  * Comments are mostly excerpted from the original.
  */
+namespace Bitworking;
+
 class Mimeparse {        
     /**
      * Carves up a mime-type and returns an Array of the [type, subtype, params] 
