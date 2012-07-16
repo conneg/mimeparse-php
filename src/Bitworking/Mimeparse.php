@@ -28,7 +28,7 @@ class Mimeparse {
      * @return array ($type, $subtype, $params)
      */
     public function parse_mime_type($mime_type) {
-      $parts = split(";", $mime_type);
+      $parts = explode(';', $mime_type);
       
       $params = array();
       foreach ($parts as $i=>$param) {
