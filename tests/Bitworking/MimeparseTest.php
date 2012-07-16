@@ -4,11 +4,6 @@ namespace Bitworking;
 class MimeparseTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Mimeparse
-     */
-    protected $object;
-
-    /**
      * @covers Bitworking\Mimeparse::parseMediaRange
      */
     public function testParseMediaRange()
