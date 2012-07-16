@@ -27,6 +27,7 @@ class Mimeparse
      *
      * @param string $mimeType
      * @return array ($type, $subtype, $params)
+     * @throws UnexpectedValueException when $mimeType does not include a valid subtype
      */
     public static function parseMimeType($mimeType)
     {
@@ -51,7 +52,7 @@ class Mimeparse
         list($type, $subtype) = explode('/', $fullType);
 
         if (!$subtype) {
-            throw (new \Exception('malformed mime type'));
+            throw new \UnexpectedValueException('malformed mime type');
         }
 
         return array(trim($type), trim($subtype), $params);

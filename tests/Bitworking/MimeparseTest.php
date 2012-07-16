@@ -5,6 +5,7 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @covers Bitworking\Mimeparse::parseMediaRange
+     * @covers Bitworking\Mimeparse::parseMimeType
      */
     public function testParseMediaRange()
     {
@@ -33,6 +34,16 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             1 => '*',
             2 => array('q' => '.2'),
         ), Mimeparse::parseMediaRange(' *; q=.2'));
+    }
+
+    /**
+     * @covers Bitworking\Mimeparse::parseMimeType
+     * @expectedException UnexpectedValueException
+     * @expectedExceptionMessage malformed mime type
+     */
+    public function testParseMimeTypeWithMalformedMimeType()
+    {
+        $parsed = Mimeparse::parseMimeType('application/;q=1');
     }
 
     /**
