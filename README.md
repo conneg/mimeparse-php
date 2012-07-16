@@ -21,6 +21,7 @@ give you the best match to send back to the user agent for your list of
 supported types or `null` if there is no best match.
 
 ```php
+<?php
 $supportedTypes = array('application/xbel+xml', 'text/xml');
 $httpAcceptHeader = 'text/*;q=0.5,*/*; q=0.1';
 $mimeType = \Bitworking\Mimeparse::bestMatch($supportedTypes, $httpAcceptHeader);
