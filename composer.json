@@ -1,0 +1,28 @@
+{
+    "name": "bitworking/mimeparse",
+    "description": "Basic functions for handling mime-types, forked from Joe Gregorio's mimeparse library <http://code.google.com/p/mimeparse/>.",
+    "type": "library",
+    "keywords": ["http", "accept", "mime"],
+    "homepage": "http://code.google.com/p/mimeparse/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joe Gregorio",
+            "homepage": "http://bitworking.org"
+        },
+        {
+            "name": "Andrew \"Venom\" K."
+        },
+        {
+            "name": "Ben Ramsey",
+            "homepage": "http://benramsey.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/ramsey/mimeparse/issues",
+        "source": "https://github.com/ramsey/mimeparse"
+    },
+    "autoload": {
+        "psr-0": { "Bitworking": "src/" }
+    }
+}
