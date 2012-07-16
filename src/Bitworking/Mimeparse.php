@@ -28,7 +28,7 @@ class Mimeparse
      * @param string $mimeType
      * @return array ($type, $subtype, $params)
      */
-    public function parseMimeType($mimeType)
+    public static function parseMimeType($mimeType)
     {
         $parts = explode(';', $mimeType);
 
@@ -75,9 +75,9 @@ class Mimeparse
      * @param string $range
      * @return array ($type, $subtype, $params)
      */
-    public function parseMediaRange($range)
+    public static function parseMediaRange($range)
     {
-        list($type, $subtype, $params) = $this->parseMimeType($range);
+        list($type, $subtype, $params) = self::parseMimeType($range);
 
         if (!(isset($params['q'])
             && $params['q']
@@ -103,11 +103,11 @@ class Mimeparse
      * @param array  $parsedRanges
      * @return array ($bestFitness, $bestFitQuality)
      */
-    public function fitnessAndQualityParsed($mimeType, $parsedRanges)
+    public static function fitnessAndQualityParsed($mimeType, $parsedRanges)
     {
         $bestFitness = -1;
         $bestFitQuality = 0;
-        list($targetType, $targetSubtype, $targetParams) = $this->parseMediaRange($mimeType);
+        list($targetType, $targetSubtype, $targetParams) = self::parseMediaRange($mimeType);
 
         foreach ($parsedRanges as $item) {
             list($type, $subtype, $params) = $item;
@@ -148,9 +148,9 @@ class Mimeparse
      * @param array  $parsedRanges
      * @return float $q
      */
-    public function qualityParsed($mimeType, $parsedRanges)
+    public static function qualityParsed($mimeType, $parsedRanges)
     {
-        list($fitness, $q) = $this->fitnessAndQualityParsed($mimeType, $parsedRanges);
+        list($fitness, $q) = self::fitnessAndQualityParsed($mimeType, $parsedRanges);
         return $q;
     }
 
@@ -166,15 +166,15 @@ class Mimeparse
      * @param string $ranges
      * @return float
      */
-    public function quality($mimeType, $ranges)
+    public static function quality($mimeType, $ranges)
     {
         $parsedRanges = explode(',', $ranges);
 
         foreach ($parsedRanges as $i => $r) {
-            $parsedRanges[$i] = $this->parseMediaRange($r);
+            $parsedRanges[$i] = self::parseMediaRange($r);
         }
 
-        return $this->qualityParsed($mimeType, $parsedRanges);
+        return self::qualityParsed($mimeType, $parsedRanges);
     }
 
     /**
@@ -190,18 +190,18 @@ class Mimeparse
      * @param  string $header
      * @return mixed  $mimeType or NULL
      */
-    public function bestMatch($supported, $header)
+    public static function bestMatch($supported, $header)
     {
         $parsedHeader = explode(',', $header);
 
         foreach ($parsedHeader as $i => $r) {
-            $parsedHeader[$i] = $this->parseMediaRange($r);
+            $parsedHeader[$i] = self::parseMediaRange($r);
         }
 
         $weightedMatches = array();
         foreach ($supported as $mimeType) {
             $weightedMatches[] = array(
-                $this->fitnessAndQualityParsed($mimeType, $parsedHeader),
+                self::fitnessAndQualityParsed($mimeType, $parsedHeader),
                 $mimeType
             );
         }
