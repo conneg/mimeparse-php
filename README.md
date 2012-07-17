@@ -28,6 +28,16 @@ $mimeType = \Bitworking\Mimeparse::bestMatch($supportedTypes, $httpAcceptHeader)
 echo $mimeType; // Should echo "text/xml"
 ```
 
+You may also use Mimeparse to get the quality value of a specific media type
+when compared against a range of media types (from the Accept header, for example).
+
+```php
+<?php
+$httpAcceptHeader = 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, *\/*;q=0.5';
+$quality = \Bitworking\Mimeparse::quality('text/html', $httpAcceptHeader);
+echo $quality; // Should echo 0.7
+```
+
 
 [http-accept]: http://tools.ietf.org/html/rfc2616#section-14.1
 [http]: http://tools.ietf.org/html/rfc2616
