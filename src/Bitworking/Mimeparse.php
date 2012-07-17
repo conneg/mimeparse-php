@@ -29,7 +29,7 @@ class Mimeparse
      * @return array ($type, $subtype, $params)
      * @throws UnexpectedValueException when $mimeType does not include a valid subtype
      */
-    public static function parseMimeType($mimeType)
+    protected static function parseMimeType($mimeType)
     {
         $parts = explode(';', $mimeType);
 
@@ -76,7 +76,7 @@ class Mimeparse
      * @param string $range
      * @return array ($type, $subtype, $params)
      */
-    public static function parseMediaRange($range)
+    protected static function parseMediaRange($range)
     {
         list($type, $subtype, $params) = self::parseMimeType($range);
 
@@ -104,7 +104,7 @@ class Mimeparse
      * @param array  $parsedRanges
      * @return array ($bestFitness, $bestFitQuality)
      */
-    public static function fitnessAndQualityParsed($mimeType, $parsedRanges)
+    protected static function fitnessAndQualityParsed($mimeType, $parsedRanges)
     {
         $bestFitness = -1;
         $bestFitQuality = 0;
@@ -149,7 +149,7 @@ class Mimeparse
      * @param array  $parsedRanges
      * @return float $q
      */
-    public static function qualityParsed($mimeType, $parsedRanges)
+    protected static function qualityParsed($mimeType, $parsedRanges)
     {
         list($fitness, $q) = self::fitnessAndQualityParsed($mimeType, $parsedRanges);
         return $q;
@@ -211,6 +211,15 @@ class Mimeparse
 
         $a = $weightedMatches[count($weightedMatches) - 1];
         return (empty($a[0][1]) ? null : $a[1]);
+    }
+
+    /**
+     * Disable access to constructor
+     *
+     * @codeCoverageIgnore
+     */
+    private function __construct()
+    {
     }
 }
 

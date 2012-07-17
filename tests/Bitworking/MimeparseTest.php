@@ -4,20 +4,26 @@ namespace Bitworking;
 class MimeparseTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * Testing this protected method because it includes a lot of parsing
+     * functionality that we wish to isolate from other tests.
+     *
      * @covers Bitworking\Mimeparse::parseMediaRange
      * @covers Bitworking\Mimeparse::parseMimeType
      */
     public function testParseMediaRange()
     {
+        $method = new \ReflectionMethod('Bitworking\Mimeparse', 'parseMediaRange');
+        $method->setAccessible(true);
+
         $expected1 = array(
             0 => 'application',
             1 => 'xml',
             2 => array('q' => '1'),
         );
 
-        $this->assertEquals($expected1, Mimeparse::parseMediaRange('application/xml;q=1'));
-        $this->assertEquals($expected1, Mimeparse::parseMediaRange('application/xml'));
-        $this->assertEquals($expected1, Mimeparse::parseMediaRange('application/xml;q='));
+        $this->assertEquals($expected1, $method->invoke(null, 'application/xml;q=1'));
+        $this->assertEquals($expected1, $method->invoke(null, 'application/xml'));
+        $this->assertEquals($expected1, $method->invoke(null, 'application/xml;q='));
 
         $expected2 = array(
             0 => 'application',
@@ -25,29 +31,37 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             2 => array('q' => '1', 'b' => 'other'),
         );
 
-        $this->assertEquals($expected2, Mimeparse::parseMediaRange('application/xml ; q=1;b=other'));
-        $this->assertEquals($expected2, Mimeparse::parseMediaRange('application/xml ; q=2;b=other'));
+        $this->assertEquals($expected2, $method->invoke(null, 'application/xml ; q=1;b=other'));
+        $this->assertEquals($expected2, $method->invoke(null, 'application/xml ; q=2;b=other'));
 
         // Java URLConnection class sends an Accept header that includes a single "*"
         $this->assertEquals(array(
             0 => '*',
             1 => '*',
             2 => array('q' => '.2'),
-        ), Mimeparse::parseMediaRange(' *; q=.2'));
+        ), $method->invoke(null, ' *; q=.2'));
     }
 
     /**
+     * Testing this protected method because it throws an exception that we
+     * want to test.
+     *
      * @covers Bitworking\Mimeparse::parseMimeType
      * @expectedException UnexpectedValueException
      * @expectedExceptionMessage malformed mime type
      */
     public function testParseMimeTypeWithMalformedMimeType()
     {
-        $parsed = Mimeparse::parseMimeType('application/;q=1');
+        $method = new \ReflectionMethod('Bitworking\Mimeparse', 'parseMediaRange');
+        $method->setAccessible(true);
+
+        $parsed = $method->invoke(null, 'application/;q=1');
     }
 
     /**
      * @covers Bitworking\Mimeparse::quality
+     * @covers Bitworking\Mimeparse::qualityParsed
+     * @covers Bitworking\Mimeparse::fitnessAndQualityParsed
      */
     public function testQuality()
     {
