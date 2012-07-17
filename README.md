@@ -14,7 +14,7 @@ on Google Project Hosting and has been cleaned up to conform to [PSR-0][],
 The Bitworking namespace is a nod to [Joe Gregorio][jgregorio], the original
 author of this library.
 
-## Example
+## Examples
 
 Use Mimeparse to specify a list of media types your application supports and
 compare that to the list of media types the user agent accepts (via the
@@ -40,6 +40,20 @@ $quality = \Bitworking\Mimeparse::quality('text/html', $httpAcceptHeader);
 echo $quality; // Should echo 0.7
 ```
 
+## Installation
+
+The preferred method of installation is via [Packagist][], as this provides
+the PSR-0 autoloader functionality. The following `composer.json` will download
+and install the latest version of the Mimeparse library into your project:
+
+```json
+{
+    "require": {
+        "bitworking/mimeparse": "*"
+    }
+}
+```
+
 
 [http-accept]: http://tools.ietf.org/html/rfc2616#section-14.1
 [http]: http://tools.ietf.org/html/rfc2616
@@ -50,3 +64,5 @@ echo $quality; // Should echo 0.7
 [PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
 [composer]: http://getcomposer.org/
 [jgregorio]: http://bitworking.org/
+[packagist]: http://packagist.org/
+
