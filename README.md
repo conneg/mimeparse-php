@@ -1,5 +1,7 @@
 # Bitworking\Mimeparse
 
+[![Build Status](https://secure.travis-ci.org/ramsey/mimeparse.png)](http://travis-ci.org/ramsey/mimeparse)
+
 This library provides basic functionality for parsing mime-types names and
 matching them against a list of media-ranges. See [section 14.1][http-accept] of
 [RFC 2616 (the HTTP specification)][http] for a complete explanation. More
