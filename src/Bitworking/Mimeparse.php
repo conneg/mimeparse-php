@@ -55,7 +55,14 @@ class Mimeparse
             throw new \UnexpectedValueException('malformed mime type');
         }
 
-        return array(trim($type), trim($subtype), $params);
+        if (false !== strpos($subtype, '+')) {
+            // don't rewrite subtype to prevent compatibility issues
+            list(/*$subtype*/, $format) = explode('+', $subtype, 2);
+        } else {
+            $format = $subtype;
+        }
+
+        return array(trim($type), trim($subtype), $params, $format);
     }
 
 
