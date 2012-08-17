@@ -1,14 +1,60 @@
 <?php
 namespace Bitworking;
 
+use Bitworking\Mimeparse;
+
 class MimeparseTest extends \PHPUnit_Framework_TestCase
 {
+    public function testParseMimeTypeWith()
+    {
+        $expected = array(
+            'application',
+            'xml',
+            array('q' => '1'),
+            'xml'
+        );
+        
+        $this->assertEquals($expected, Mimeparse::parseMimeType('application/xml; q=1'));
+    }
+    
+    public function testParseMimeTypeWithFormat()
+    {
+        $expected = array(
+            'application',
+            'xhtml+xml',
+            array('q' => '1'),
+            'xml'
+        );
+        
+        $this->assertEquals($expected, Mimeparse::parseMimeType('application/xhtml+xml; q=1'));
+    }
+
+    public function testParseMimeTypeWithSingleWildCard()
+    {
+        $expected = array(
+            '*',
+            '*',
+            array(),
+            '*'
+        );
+
+        $this->assertEquals($expected, Mimeparse::parseMimeType('*'));
+    }
+
+    /**
+     * @expectedException UnexpectedValueException
+     * @expectedExceptionMessage malformed mime type
+     */
+    public function testParseMimeTypeWithMalformedMimeType()
+    {
+        $parsed = Mimeparse::parseMimeType('application/;q=1');
+    }
+
     /**
      * Testing this protected method because it includes a lot of parsing
      * functionality that we wish to isolate from other tests.
      *
      * @covers Bitworking\Mimeparse::parseMediaRange
-     * @covers Bitworking\Mimeparse::parseMimeType
      */
     public function testParseMediaRange()
     {
@@ -40,22 +86,6 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             1 => '*',
             2 => array('q' => '.2'),
         ), $method->invoke(null, ' *; q=.2'));
-    }
-
-    /**
-     * Testing this protected method because it throws an exception that we
-     * want to test.
-     *
-     * @covers Bitworking\Mimeparse::parseMimeType
-     * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage malformed mime type
-     */
-    public function testParseMimeTypeWithMalformedMimeType()
-    {
-        $method = new \ReflectionMethod('Bitworking\Mimeparse', 'parseMediaRange');
-        $method->setAccessible(true);
-
-        $parsed = $method->invoke(null, 'application/;q=1');
     }
 
     /**
