@@ -29,7 +29,7 @@ class Mimeparse
      * @return array ($type, $subtype, $params)
      * @throws UnexpectedValueException when $mimeType does not include a valid subtype
      */
-    protected static function parseMimeType($mimeType)
+    public static function parseMimeType($mimeType)
     {
         $parts = explode(';', $mimeType);
 
