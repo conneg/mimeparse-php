@@ -94,8 +94,7 @@ class Mimeparse
         list($type, $subtype, $params) = self::parseMimeType($range);
 
         if (!(isset($params['q'])
-            && $params['q']
-            && floatval($params['q'])
+            && !empty($params['q'])
             && floatval($params['q']) <= 1
             && floatval($params['q']) >= 0)
         ) {
@@ -220,9 +219,22 @@ class Mimeparse
             );
         }
 
-        array_multisort($weightedMatches);
+        // If the best fit quality is 0 for anything, then it is
+        // not acceptable for the client; remove it from the list
+        // of weighted matches.
+        $unacceptableTypes = array();
+        foreach ($weightedMatches as $k => $v) {
+            if (empty($v[0][1])) {
+                $unacceptableTypes[] = $k;
+            }
+        }
+        foreach ($unacceptableTypes as $weightedMatchKey) {
+            unset($weightedMatches[$weightedMatchKey]);
+        }
 
-        $a = $weightedMatches[count($weightedMatches) - 1];
+        array_multisort($weightedMatches);
+        $a = array_pop($weightedMatches);
+
         return (empty($a[0][1]) ? null : $a[1]);
     }
 

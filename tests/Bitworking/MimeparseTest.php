@@ -154,4 +154,27 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
         // match using a wildcard for both requested and supported
         $this->assertEquals('image/*', Mimeparse::bestMatch($supportedMimeTypes4, 'image/*'));
     }
+
+    /**
+     * @covers Bitworking\Mimeparse::bestMatch
+     * @see http://shiflett.org/blog/2011/may/the-accept-header
+     */
+    public function testZeroQuality()
+    {
+        $supportedMimeTypes = array('application/json');
+        $httpAcceptHeader = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8,application/json;q=0.0';
+
+        $this->assertNull(Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader));
+    }
+
+    /**
+     * @covers Bitworking\Mimeparse::bestMatch
+     */
+    public function testStarSlashStarWithItemOfZeroQuality()
+    {
+        $supportedMimeTypes = array('text/plain', 'application/json');
+        $httpAcceptHeader = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8,application/json;q=0.0';
+
+        $this->assertEquals('text/plain', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader));
+    }
 }
