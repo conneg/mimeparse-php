@@ -93,10 +93,10 @@ class Mimeparse
     {
         list($type, $subtype, $params) = self::parseMimeType($range);
 
-        if (!(isset($params['q'])
-            && !empty($params['q'])
-            && floatval($params['q']) <= 1
-            && floatval($params['q']) >= 0)
+        if (!isset($params['q'])
+            || !is_numeric($params['q'])
+            || floatval($params['q']) > 1
+            || floatval($params['q']) < 0
         ) {
             $params['q'] = '1';
         }

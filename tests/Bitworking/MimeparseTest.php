@@ -158,6 +158,7 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers Bitworking\Mimeparse::bestMatch
      * @see http://shiflett.org/blog/2011/may/the-accept-header
+     * @see http://code.google.com/p/mimeparse/issues/detail?id=15
      */
     public function testZeroQuality()
     {
@@ -165,6 +166,7 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
         $httpAcceptHeader = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8,application/json;q=0.0';
 
         $this->assertNull(Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader));
+        $this->assertNull(Mimeparse::bestMatch($supportedMimeTypes, 'application/xml,*/*;q=0'));
     }
 
     /**
