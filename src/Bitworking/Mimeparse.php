@@ -17,13 +17,19 @@ namespace Bitworking;
 class Mimeparse
 {
     /**
-     * Carves up a mime-type and returns an Array of the [type, subtype, params]
-     * where "params" is a Hash of all the parameters for the media range.
+     * Parses a mime-type and returns an array with its components.
      *
-     * For example, the media range "application/xhtml;q=0.5" would
+     * The array returned contains:
+     *
+     * 1. type: The type categorization.
+     * 2. subtype: The subtype categorization.
+     * 3. params: A hash of all the parameters for the media range.
+     * 4. format: The content format.
+     *
+     * For example, the media range "application/xhtml+xml;q=0.5" would
      * get parsed into:
      *
-     * array("application", "xhtml", array( "q" => "0.5" ))
+     * array("application", "xhtml", array( "q" => "0.5" ), "xml")
      *
      * @param string $mimeType
      * @return array ($type, $subtype, $params)
@@ -55,7 +61,14 @@ class Mimeparse
             throw new \UnexpectedValueException('malformed mime type');
         }
 
-        return array(trim($type), trim($subtype), $params);
+        if (false !== strpos($subtype, '+')) {
+            // don't rewrite subtype to prevent compatibility issues
+            list(/*$subtype*/, $format) = explode('+', $subtype, 2);
+        } else {
+            $format = $subtype;
+        }
+
+        return array(trim($type), trim($subtype), $params, $format);
     }
 
 
