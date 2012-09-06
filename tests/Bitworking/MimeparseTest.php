@@ -177,4 +177,16 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('text/plain', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader));
     }
+
+    /**
+     * @covers Bitworking\Mimeparse::bestMatch
+     * @see http://code.google.com/p/mimeparse/issues/detail?id=10
+     */
+    public function testStarSlashStarWithHigherQualityThanMoreSpecificType()
+    {
+        $supportedMimeTypes = array('image/jpeg', 'text/plain');
+        $httpAcceptHeader = 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5';
+
+        $this->assertEquals('image/jpeg', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader));
+    }
 }

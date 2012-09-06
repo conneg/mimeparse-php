@@ -146,7 +146,7 @@ class Mimeparse
             }
         }
 
-        return array($bestFitness, (float) $bestFitQuality);
+        return array((float) $bestFitQuality, $bestFitness);
     }
 
     /**
@@ -163,7 +163,7 @@ class Mimeparse
      */
     protected static function qualityParsed($mimeType, $parsedRanges)
     {
-        list($fitness, $q) = self::fitnessAndQualityParsed($mimeType, $parsedRanges);
+        list($q, $fitness) = self::fitnessAndQualityParsed($mimeType, $parsedRanges);
         return $q;
     }
 
@@ -224,7 +224,7 @@ class Mimeparse
         // of weighted matches.
         $unacceptableTypes = array();
         foreach ($weightedMatches as $k => $v) {
-            if (empty($v[0][1])) {
+            if (empty($v[0][0])) {
                 $unacceptableTypes[] = $k;
             }
         }
@@ -235,7 +235,7 @@ class Mimeparse
         array_multisort($weightedMatches);
         $a = array_pop($weightedMatches);
 
-        return (empty($a[0][1]) ? null : $a[1]);
+        return (empty($a[0][0]) ? null : $a[1]);
     }
 
     /**
