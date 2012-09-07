@@ -191,4 +191,27 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('image/jpeg', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader));
     }
+
+    /**
+     * @covers Bitworking\Mimeparse::bestMatch
+     */
+    public function testBestMatchWithTieBreaker()
+    {
+        $supportedMimeTypes = array('text/html', 'application/json', 'application/hal+xml', 'application/hal+json');
+        $httpAcceptHeader = 'application/*, text/*;q=0.8';
+
+        $this->assertEquals('application/json', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader));
+        $this->assertEquals('application/hal+json', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader, 'application/hal+json'));
+    }
+
+    /**
+     * @covers Bitworking\Mimeparse::bestMatch
+     */
+    public function testBestMatchWithTieBreakerAndNoTies()
+    {
+        $supportedMimeTypes = array('text/html', 'application/hal+json');
+        $httpAcceptHeader = 'application/*, text/*;q=0.8';
+
+        $this->assertEquals('application/hal+json', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader, 'application/hal+json'));
+    }
 }

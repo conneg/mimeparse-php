@@ -201,9 +201,10 @@ class Mimeparse
      *
      * @param  array  $supported
      * @param  string $header
+     * @param  string $tieBreaker In case of a tie, this mime-type is preferred
      * @return mixed  $mimeType or NULL
      */
-    public static function bestMatch($supported, $header)
+    public static function bestMatch($supported, $header, $tieBreaker = null)
     {
         $parsedHeader = explode(',', $header);
 
@@ -234,6 +235,18 @@ class Mimeparse
 
         array_multisort($weightedMatches);
         $a = array_pop($weightedMatches);
+
+        // If there's a tie breaker specified, see if we have any ties
+        // and then break them with the $tieBreaker
+        if ($tieBreaker) {
+            array_push($weightedMatches, $a);
+            $ties = array_filter($weightedMatches, function ($val) use ($a) {
+                return ($val[0] == $a[0]);
+            });
+            if (count($ties) > 1) {
+                return $tieBreaker;
+            }
+        }
 
         return (empty($a[0][0]) ? null : $a[1]);
     }
