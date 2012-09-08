@@ -243,7 +243,7 @@ class Mimeparse
             $ties = array_filter($weightedMatches, function ($val) use ($a) {
                 return ($val[0] == $a[0]);
             });
-            if (count($ties) > 1) {
+            if (count($ties) > 1 && in_array(array($a[0], $tieBreaker), $ties)) {
                 return $tieBreaker;
             }
         }
