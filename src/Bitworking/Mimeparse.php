@@ -115,7 +115,7 @@ class Mimeparse
      *
      * @param string $mimeType
      * @param array  $parsedRanges
-     * @return array ($bestFitness, $bestFitQuality)
+     * @return array ($bestFitQuality, $bestFitness)
      */
     protected static function qualityAndFitnessParsed($mimeType, $parsedRanges)
     {
