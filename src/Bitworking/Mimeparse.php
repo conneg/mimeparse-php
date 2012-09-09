@@ -18,7 +18,7 @@ namespace Bitworking;
 class Mimeparse
 {
     /**
-     * Parses a mime-type and returns an array with its components.
+     * Parses a media-range and returns an array with its components.
      *
      * The returned array contains:
      *
@@ -34,14 +34,14 @@ class Mimeparse
      *
      * array("application", "xhtml+xml", array( "q" => "0.5" ), "xml")
      *
-     * @param string $mimeType
+     * @param string $mediaRange
      * @return array ($type, $subtype, $params, $genericSubtype)
-     * @throws UnexpectedValueException when $mimeType does not include a
+     * @throws UnexpectedValueException when $mediaRange does not include a
      * valid subtype
      */
-    public static function parseMimeType($mimeType)
+    public static function parseMediaRange($mediaRange)
     {
-        $parts = explode(';', $mimeType);
+        $parts = explode(';', $mediaRange);
 
         $params = array();
         foreach ($parts as $i => $param) {
@@ -62,7 +62,7 @@ class Mimeparse
         list($type, $subtype) = explode('/', $fullType);
 
         if (!$subtype) {
-            throw new \UnexpectedValueException('Malformed mime-type: '.$mimeType);
+            throw new \UnexpectedValueException('Malformed media-range: '.$mediaRange);
         }
 
         $plusPos = strpos($subtype, '+');
@@ -77,33 +77,33 @@ class Mimeparse
 
 
     /**
-     * Parses a mime-type via Mimeparse::parseMimeType() and guarantees that
+     * Parses a media-range via Mimeparse::parseMediaRange() and guarantees that
      * there is a value for the "q" param, filling it in with a proper default
      * if necessary.
      *
-     * @param string $mimeType
+     * @param string $mediaRange
      * @return array ($type, $subtype, $params, $genericSubtype)
      */
-    protected static function parseAndNormalizeMimeType($range)
+    protected static function parseAndNormalizeMediaRange($mediaRange)
     {
-        $parsedMimeType = self::parseMimeType($range);
-        $params = $parsedMimeType[2];
+        $parsedMediaRange = self::parseMediaRange($mediaRange);
+        $params = $parsedMediaRange[2];
 
         if (!isset($params['q'])
             || !is_numeric($params['q'])
             || floatval($params['q']) > 1
             || floatval($params['q']) < 0
         ) {
-            $parsedMimeType[2]['q'] = '1';
+            $parsedMediaRange[2]['q'] = '1';
         }
 
-        return $parsedMimeType;
+        return $parsedMediaRange;
     }
 
     /**
      * Find the best match for a given mime-type against a list of
      * media-ranges that have already been parsed by
-     * Mimeparse::parseAndNormalizeMimeType()
+     * Mimeparse::parseAndNormalizeMediaRange()
      *
      * Returns the fitness and the "q" quality parameter of the best match, or
      * an array [-1, 0] if no match was found. Just as for
@@ -118,7 +118,7 @@ class Mimeparse
     {
         $bestFitness = -1;
         $bestFitQuality = 0;
-        list($targetType, $targetSubtype, $targetParams) = self::parseAndNormalizeMimeType($mimeType);
+        list($targetType, $targetSubtype, $targetParams) = self::parseAndNormalizeMediaRange($mimeType);
 
         foreach ($parsedRanges as $item) {
             list($type, $subtype, $params) = $item;
@@ -150,7 +150,7 @@ class Mimeparse
     /**
      * Find the best match for a given mime-type against a list of
      * media-ranges that have already been parsed by
-     * Mimeparse::parseAndNormalizeMimeType()
+     * Mimeparse::parseAndNormalizeMediaRange()
      *
      * Returns the "q" quality parameter of the best match, 0 if no match was
      * found. This function behaves the same as Mimeparse::quality() except
@@ -183,7 +183,7 @@ class Mimeparse
         $parsedRanges = explode(',', $ranges);
 
         foreach ($parsedRanges as $i => $r) {
-            $parsedRanges[$i] = self::parseAndNormalizeMimeType($r);
+            $parsedRanges[$i] = self::parseAndNormalizeMediaRange($r);
         }
 
         return self::qualityParsed($mimeType, $parsedRanges);
@@ -210,7 +210,7 @@ class Mimeparse
         $parsedHeader = explode(',', $header);
 
         foreach ($parsedHeader as $i => $r) {
-            $parsedHeader[$i] = self::parseAndNormalizeMimeType($r);
+            $parsedHeader[$i] = self::parseAndNormalizeMediaRange($r);
         }
 
         $weightedMatches = array();

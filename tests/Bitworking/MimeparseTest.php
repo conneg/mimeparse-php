@@ -5,7 +5,7 @@ use Bitworking\Mimeparse;
 
 class MimeparseTest extends \PHPUnit_Framework_TestCase
 {
-    public function testParseMimeTypeWith()
+    public function testParseMediaRange()
     {
         $expected = array(
             'application',
@@ -14,10 +14,10 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             'xml'
         );
         
-        $this->assertEquals($expected, Mimeparse::parseMimeType('application/xml; q=1'));
+        $this->assertEquals($expected, Mimeparse::parseMediaRange('application/xml; q=1'));
     }
     
-    public function testParseMimeTypeWithFormat()
+    public function testParseMediaRangeWithGenericSubtype()
     {
         $expected = array(
             'application',
@@ -26,10 +26,10 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             'xml'
         );
         
-        $this->assertEquals($expected, Mimeparse::parseMimeType('application/xhtml+xml; q=1'));
+        $this->assertEquals($expected, Mimeparse::parseMediaRange('application/xhtml+xml; q=1'));
     }
 
-    public function testParseMimeTypeWithSingleWildCard()
+    public function testParseMediaRangeWithSingleWildCard()
     {
         $expected = array(
             '*',
@@ -38,27 +38,27 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             '*'
         );
 
-        $this->assertEquals($expected, Mimeparse::parseMimeType('*'));
+        $this->assertEquals($expected, Mimeparse::parseMediaRange('*'));
     }
 
     /**
      * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage malformed mime type
+     * @expectedExceptionMessage Malformed media-range: application/;q=1
      */
-    public function testParseMimeTypeWithMalformedMimeType()
+    public function testParseMediaRangeWithMalformedMediaRange()
     {
-        $parsed = Mimeparse::parseMimeType('application/;q=1');
+        $parsed = Mimeparse::parseMediaRange('application/;q=1');
     }
 
     /**
      * Testing this protected method because it includes a lot of parsing
      * functionality that we wish to isolate from other tests.
      *
-     * @covers Bitworking\Mimeparse::parseAndNormalizeMimeType
+     * @covers Bitworking\Mimeparse::parseAndNormalizeMediaRange
      */
-    public function testParseAndNormalizeMimeType()
+    public function testParseAndNormalizeMediaRange()
     {
-        $method = new \ReflectionMethod('Bitworking\Mimeparse', 'parseAndNormalizeMimeType');
+        $method = new \ReflectionMethod('Bitworking\Mimeparse', 'parseAndNormalizeMediaRange');
         $method->setAccessible(true);
 
         $expected1 = array(
