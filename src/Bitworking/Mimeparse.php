@@ -59,7 +59,7 @@ class Mimeparse
         list($type, $subtype) = explode('/', $fullType);
 
         if (!$subtype) {
-            throw new \UnexpectedValueException('malformed mime type');
+            throw new \UnexpectedValueException('Malformed mime-type: '.$mimeType);
         }
 
         $plusPos = strpos($subtype, '+');
