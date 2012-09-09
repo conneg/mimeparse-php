@@ -33,7 +33,7 @@ class Mimeparse
      * array("application", "xhtml+xml", array( "q" => "0.5" ), "xml")
      *
      * @param string $mimeType
-     * @return array ($type, $subtype, $params)
+     * @return array ($type, $subtype, $params, $genericSubtype)
      * @throws UnexpectedValueException when $mimeType does not include a valid subtype
      */
     public static function parseMimeType($mimeType)
@@ -74,40 +74,32 @@ class Mimeparse
 
 
     /**
-     * Carves up a media-range and returns an array of the
-     * [type, subtype, params] where "params" is an associative
-     * array of all the parameters for the media-range.
-     *
-     * For example, the media-range "application/*;q=0.5" would
-     * get parsed into:
-     *
-     * array("application", "*", array( "q" => "0.5" ))
-     *
-     * In addition this function also guarantees that there
-     * is a value for "q" in the params dictionary, filling it
+     * Parses mime-type via Mimeparse::parseMimeType() and guarantees that
+     * there is a value for "q" in the params dictionary, filling it
      * in with a proper default if necessary.
      *
-     * @param string $range
-     * @return array ($type, $subtype, $params)
+     * @param string $mimeType
+     * @return array ($type, $subtype, $params, $genericSubtype)
      */
-    protected static function parseMediaRange($range)
+    protected static function parseAndNormalizeMimeType($range)
     {
-        list($type, $subtype, $params) = self::parseMimeType($range);
+        $parsedMimeType = self::parseMimeType($range);
+        $params = $parsedMimeType[2];
 
         if (!isset($params['q'])
             || !is_numeric($params['q'])
             || floatval($params['q']) > 1
             || floatval($params['q']) < 0
         ) {
-            $params['q'] = '1';
+            $parsedMimeType[2]['q'] = '1';
         }
 
-        return array($type, $subtype, $params);
+        return $parsedMimeType;
     }
 
     /**
      * Find the best match for a given mime-type against a list of
-     * media-ranges that have already been parsed by Mimeparse::parseMediaRange()
+     * media-ranges that have already been parsed by Mimeparse::parseAndNormalizeMimeType()
      *
      * Returns the fitness and the "q" quality parameter of the best match, or an
      * array [-1, 0] if no match was found. Just as for Mimeparse::quality(),
@@ -121,7 +113,7 @@ class Mimeparse
     {
         $bestFitness = -1;
         $bestFitQuality = 0;
-        list($targetType, $targetSubtype, $targetParams) = self::parseMediaRange($mimeType);
+        list($targetType, $targetSubtype, $targetParams) = self::parseAndNormalizeMimeType($mimeType);
 
         foreach ($parsedRanges as $item) {
             list($type, $subtype, $params) = $item;
@@ -152,7 +144,7 @@ class Mimeparse
 
     /**
      * Find the best match for a given mime-type against a list of
-     * media-ranges that have already been parsed by Mimeparse::parseMediaRange()
+     * media-ranges that have already been parsed by Mimeparse::parseAndNormalizeMimeType()
      *
      * Returns the "q" quality parameter of the best match, 0 if no match
      * was found. This function behaves the same as Mimeparse::quality() except that
@@ -185,7 +177,7 @@ class Mimeparse
         $parsedRanges = explode(',', $ranges);
 
         foreach ($parsedRanges as $i => $r) {
-            $parsedRanges[$i] = self::parseMediaRange($r);
+            $parsedRanges[$i] = self::parseAndNormalizeMimeType($r);
         }
 
         return self::qualityParsed($mimeType, $parsedRanges);
@@ -212,7 +204,7 @@ class Mimeparse
         $parsedHeader = explode(',', $header);
 
         foreach ($parsedHeader as $i => $r) {
-            $parsedHeader[$i] = self::parseMediaRange($r);
+            $parsedHeader[$i] = self::parseAndNormalizeMimeType($r);
         }
 
         $weightedMatches = array();

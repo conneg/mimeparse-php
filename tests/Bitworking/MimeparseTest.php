@@ -54,17 +54,18 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
      * Testing this protected method because it includes a lot of parsing
      * functionality that we wish to isolate from other tests.
      *
-     * @covers Bitworking\Mimeparse::parseMediaRange
+     * @covers Bitworking\Mimeparse::parseAndNormalizeMimeType
      */
-    public function testParseMediaRange()
+    public function testParseAndNormalizeMimeType()
     {
-        $method = new \ReflectionMethod('Bitworking\Mimeparse', 'parseMediaRange');
+        $method = new \ReflectionMethod('Bitworking\Mimeparse', 'parseAndNormalizeMimeType');
         $method->setAccessible(true);
 
         $expected1 = array(
             0 => 'application',
             1 => 'xml',
             2 => array('q' => '1'),
+            3 => 'xml',
         );
 
         $this->assertEquals($expected1, $method->invoke(null, 'application/xml;q=1'));
@@ -75,6 +76,7 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             0 => 'application',
             1 => 'xml',
             2 => array('q' => '1', 'b' => 'other'),
+            3 => 'xml',
         );
 
         $this->assertEquals($expected2, $method->invoke(null, 'application/xml ; q=1;b=other'));
@@ -85,6 +87,7 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             0 => '*',
             1 => '*',
             2 => array('q' => '.2'),
+            3 => '*',
         ), $method->invoke(null, ' *; q=.2'));
     }
 
