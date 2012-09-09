@@ -1,11 +1,10 @@
 <?php
 /**
- * Mimeparse class. This class provides basic functions for handling
- * mime-types. It can handle matching mime-types against a list of
- * media-ranges. See section 14.1 of the HTTP specification [RFC 2616] for a
- * complete explanation.
+ * Mimeparse class. Provides basic functions for handling mime-types. It can
+ * match mime-types against a list of media-ranges. See section 14.1 of the
+ * HTTP specification [RFC 2616] for a complete explanation.
  *
- * It's just a port to PHP from original Python code
+ * It's a PHP port of the original Python code
  * (http://code.google.com/p/mimeparse/).
  *
  * Ported from version 0.1.2. Comments are mostly excerpted from the original.
@@ -21,7 +20,7 @@ class Mimeparse
     /**
      * Parses a mime-type and returns an array with its components.
      *
-     * The array returned contains:
+     * The returned array contains:
      *
      * 1. type: The type categorization.
      * 2. subtype: The subtype categorization.
@@ -78,9 +77,9 @@ class Mimeparse
 
 
     /**
-     * Parses mime-type via Mimeparse::parseMimeType() and guarantees that
-     * there is a value for "q" in the params dictionary, filling it in with a
-     * proper default if necessary.
+     * Parses a mime-type via Mimeparse::parseMimeType() and guarantees that
+     * there is a value for the "q" param, filling it in with a proper default
+     * if necessary.
      *
      * @param string $mimeType
      * @return array ($type, $subtype, $params, $genericSubtype)
@@ -192,9 +191,9 @@ class Mimeparse
 
     /**
      * Takes a list of supported mime-types and finds the best match for all
-     * the media-ranges listed in header. The value of header must be a
+     * the media-ranges listed in header. The value of $header must be a
      * string that conforms to the format of the HTTP Accept: header. The
-     * value of supported is an array of mime-types
+     * value of $supported is an array of mime-types.
      *
      * In case of ties the mime-type with the lowest index in $supported will
      * be used.
