@@ -1,10 +1,12 @@
 <?php
 /**
- * Mimeparse class. This class provides basic functions for handling mime-types. It can
- * handle matching mime-types against a list of media-ranges. See section
- * 14.1 of the HTTP specification [RFC 2616] for a complete explanation.
+ * Mimeparse class. This class provides basic functions for handling
+ * mime-types. It can handle matching mime-types against a list of
+ * media-ranges. See section 14.1 of the HTTP specification [RFC 2616] for a
+ * complete explanation.
  *
- * It's just a port to PHP from original Python code (http://code.google.com/p/mimeparse/).
+ * It's just a port to PHP from original Python code
+ * (http://code.google.com/p/mimeparse/).
  *
  * Ported from version 0.1.2. Comments are mostly excerpted from the original.
  *
@@ -23,18 +25,20 @@ class Mimeparse
      *
      * 1. type: The type categorization.
      * 2. subtype: The subtype categorization.
-     * 3. params: An associative array of all the parameters for the media-range.
+     * 3. params: An associative array of all the parameters for the
+     *    media-range.
      * 4. generic subtype: A more generic subtype, if one is present. See
      *    http://tools.ietf.org/html/rfc3023#appendix-A.12
      *
-     * For example, the media-range "application/xhtml+xml;q=0.5" would
-     * get parsed into:
+     * For example, the media-range "application/xhtml+xml;q=0.5" would get
+     * parsed into:
      *
      * array("application", "xhtml+xml", array( "q" => "0.5" ), "xml")
      *
      * @param string $mimeType
      * @return array ($type, $subtype, $params, $genericSubtype)
-     * @throws UnexpectedValueException when $mimeType does not include a valid subtype
+     * @throws UnexpectedValueException when $mimeType does not include a
+     * valid subtype
      */
     public static function parseMimeType($mimeType)
     {
@@ -50,8 +54,8 @@ class Mimeparse
 
         $fullType = trim($parts[0]);
 
-        // Java URLConnection class sends an Accept header that includes a single "*".
-        // Turn it into a legal wildcard.
+        // Java URLConnection class sends an Accept header that includes a
+        // single "*". Turn it into a legal wildcard.
         if ($fullType == '*') {
             $fullType = '*/*';
         }
@@ -75,8 +79,8 @@ class Mimeparse
 
     /**
      * Parses mime-type via Mimeparse::parseMimeType() and guarantees that
-     * there is a value for "q" in the params dictionary, filling it
-     * in with a proper default if necessary.
+     * there is a value for "q" in the params dictionary, filling it in with a
+     * proper default if necessary.
      *
      * @param string $mimeType
      * @return array ($type, $subtype, $params, $genericSubtype)
@@ -99,11 +103,13 @@ class Mimeparse
 
     /**
      * Find the best match for a given mime-type against a list of
-     * media-ranges that have already been parsed by Mimeparse::parseAndNormalizeMimeType()
+     * media-ranges that have already been parsed by
+     * Mimeparse::parseAndNormalizeMimeType()
      *
-     * Returns the fitness and the "q" quality parameter of the best match, or an
-     * array [-1, 0] if no match was found. Just as for Mimeparse::quality(),
-     * $parsedRanges must be an array of parsed media-ranges.
+     * Returns the fitness and the "q" quality parameter of the best match, or
+     * an array [-1, 0] if no match was found. Just as for
+     * Mimeparse::quality(), $parsedRanges must be an array of parsed
+     * media-ranges.
      *
      * @param string $mimeType
      * @param array  $parsedRanges
@@ -144,11 +150,12 @@ class Mimeparse
 
     /**
      * Find the best match for a given mime-type against a list of
-     * media-ranges that have already been parsed by Mimeparse::parseAndNormalizeMimeType()
+     * media-ranges that have already been parsed by
+     * Mimeparse::parseAndNormalizeMimeType()
      *
-     * Returns the "q" quality parameter of the best match, 0 if no match
-     * was found. This function behaves the same as Mimeparse::quality() except that
-     * $parsedRanges must be an array of parsed media-ranges.
+     * Returns the "q" quality parameter of the best match, 0 if no match was
+     * found. This function behaves the same as Mimeparse::quality() except
+     * that $parsedRanges must be an array of parsed media-ranges.
      *
      * @param string $mimeType
      * @param array  $parsedRanges
@@ -161,8 +168,8 @@ class Mimeparse
     }
 
     /**
-     * Returns the quality "q" of a mime-type when compared against
-     * the media-ranges in ranges. For example:
+     * Returns the quality "q" of a mime-type when compared against the
+     * media-ranges in ranges. For example:
      *
      * Mimeparse::quality("text/html", "text/*;q=0.3, text/html;q=0.7,
      * text/html;level=1, text/html;level=2;q=0.4, *\/*;q=0.5")
@@ -184,10 +191,10 @@ class Mimeparse
     }
 
     /**
-     * Takes a list of supported mime-types and finds the best match
-     * for all the media-ranges listed in header. The value of header
-     * must be a string that conforms to the format of the HTTP Accept:
-     * header. The value of supported is an array of mime-types
+     * Takes a list of supported mime-types and finds the best match for all
+     * the media-ranges listed in header. The value of header must be a
+     * string that conforms to the format of the HTTP Accept: header. The
+     * value of supported is an array of mime-types
      *
      * In case of ties the mime-type with the lowest index in $supported will
      * be used.
