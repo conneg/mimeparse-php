@@ -4,7 +4,7 @@
  * handle matching mime-types against a list of media-ranges. See section
  * 14.1 of the HTTP specification [RFC 2616] for a complete explanation.
  *
- * It's just a port to php from original Python code (http://code.google.com/p/mimeparse/).
+ * It's just a port to PHP from original Python code (http://code.google.com/p/mimeparse/).
  *
  * Ported from version 0.1.2. Comments are mostly excerpted from the original.
  *
@@ -23,11 +23,11 @@ class Mimeparse
      *
      * 1. type: The type categorization.
      * 2. subtype: The subtype categorization.
-     * 3. params: An associative array of all the parameters for the media range.
+     * 3. params: An associative array of all the parameters for the media-range.
      * 4. generic subtype: A more generic subtype, if one is present. See
      *    http://tools.ietf.org/html/rfc3023#appendix-A.12
      *
-     * For example, the media range "application/xhtml+xml;q=0.5" would
+     * For example, the media-range "application/xhtml+xml;q=0.5" would
      * get parsed into:
      *
      * array("application", "xhtml+xml", array( "q" => "0.5" ), "xml")
@@ -50,7 +50,7 @@ class Mimeparse
 
         $fullType = trim($parts[0]);
 
-        // Java URLConnection class sends an Accept header that includes a single "*"
+        // Java URLConnection class sends an Accept header that includes a single "*".
         // Turn it into a legal wildcard.
         if ($fullType == '*') {
             $fullType = '*/*';
@@ -74,14 +74,14 @@ class Mimeparse
 
 
     /**
-     * Carves up a media range and returns an array of the
+     * Carves up a media-range and returns an array of the
      * [type, subtype, params] where "params" is an associative
-     * array of all the parameters for the media range.
+     * array of all the parameters for the media-range.
      *
-     * For example, the media range "application/*;q=0.5" would
+     * For example, the media-range "application/*;q=0.5" would
      * get parsed into:
      *
-     * array("application", "*", ( "q", "0.5" ))
+     * array("application", "*", array( "q" => "0.5" ))
      *
      * In addition this function also guarantees that there
      * is a value for "q" in the params dictionary, filling it
@@ -111,7 +111,7 @@ class Mimeparse
      *
      * Returns the fitness and the "q" quality parameter of the best match, or an
      * array [-1, 0] if no match was found. Just as for Mimeparse::quality(),
-     * $parsedRanges must be an Enumerable of parsed media-ranges.
+     * $parsedRanges must be an array of parsed media-ranges.
      *
      * @param string $mimeType
      * @param array  $parsedRanges
@@ -156,7 +156,7 @@ class Mimeparse
      *
      * Returns the "q" quality parameter of the best match, 0 if no match
      * was found. This function behaves the same as Mimeparse::quality() except that
-     * $parsedRanges must be an Enumerable of parsed media-ranges.
+     * $parsedRanges must be an array of parsed media-ranges.
      *
      * @param string $mimeType
      * @param array  $parsedRanges
@@ -195,10 +195,10 @@ class Mimeparse
      * Takes a list of supported mime-types and finds the best match
      * for all the media-ranges listed in header. The value of header
      * must be a string that conforms to the format of the HTTP Accept:
-     * header. The value of supported is an Enumerable of mime-types
+     * header. The value of supported is an array of mime-types
      *
-     * In case of ties the mime-type closest to the beginning of the 
-     * $supported array will be used.
+     * In case of ties the mime-type with the lowest index in $supported will
+     * be used.
      *
      * Mimeparse::bestMatch(array("application/xbel+xml", "text/xml"), "text/*;q=0.5,*\/*; q=0.1")
      * => "text/xml"
