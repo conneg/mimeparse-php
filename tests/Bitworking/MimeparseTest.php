@@ -91,7 +91,7 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers Bitworking\Mimeparse::quality
      * @covers Bitworking\Mimeparse::qualityParsed
-     * @covers Bitworking\Mimeparse::fitnessAndQualityParsed
+     * @covers Bitworking\Mimeparse::qualityAndFitnessParsed
      */
     public function testQuality()
     {
@@ -122,10 +122,10 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('application/xml', Mimeparse::bestMatch($supportedMimeTypes1, 'application/xml; q=1'));
 
         // match using a subtype wildcard
-        $this->assertEquals('application/xml', Mimeparse::bestMatch($supportedMimeTypes1, 'application/*; q=1'));
+        $this->assertEquals('application/xbel+xml', Mimeparse::bestMatch($supportedMimeTypes1, 'application/*; q=1'));
 
         // match using a type wildcard
-        $this->assertEquals('application/xml', Mimeparse::bestMatch($supportedMimeTypes1, '* / *'));
+        $this->assertEquals('application/xbel+xml', Mimeparse::bestMatch($supportedMimeTypes1, '* / *'));
 
 
         $supportedMimeTypes2 = array('application/xbel+xml', 'text/xml');
@@ -195,34 +195,13 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers Bitworking\Mimeparse::bestMatch
      */
-    public function testBestMatchWithTieBreaker()
+    public function testBestMatchWithTies()
     {
-        $supportedMimeTypes = array('text/html', 'application/json', 'application/hal+xml', 'application/hal+json');
+        $supportedMimeTypes1 = array('text/html', 'application/json', 'application/hal+xml', 'application/hal+json');
+        $supportedMimeTypes2 = array('text/html', 'application/hal+json', 'application/json', 'application/hal+xml');
         $httpAcceptHeader = 'application/*, text/*;q=0.8';
 
-        $this->assertEquals('application/json', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader));
-        $this->assertEquals('application/hal+json', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader, 'application/hal+json'));
-    }
-
-    /**
-     * @covers Bitworking\Mimeparse::bestMatch
-     */
-    public function testBestMatchWithTieBreakerAndNoTies()
-    {
-        $supportedMimeTypes = array('text/html', 'application/hal+json');
-        $httpAcceptHeader = 'application/*, text/*;q=0.8';
-
-        $this->assertEquals('application/hal+json', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader, 'application/hal+json'));
-    }
-
-    /**
-     * @covers Bitworking\Mimeparse::bestMatch
-     */
-    public function testBestMatchWithTieBreakerNotMatchingTies()
-    {
-        $supportedMimeTypes = array('text/html', 'application/hal+xml', 'application/hal+json');
-        $httpAcceptHeader = 'application/*';
-
-        $this->assertEquals('application/hal+xml', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader, 'text/html'));
+        $this->assertEquals('application/json', Mimeparse::bestMatch($supportedMimeTypes1, $httpAcceptHeader));
+        $this->assertEquals('application/hal+json', Mimeparse::bestMatch($supportedMimeTypes2, $httpAcceptHeader));
     }
 }

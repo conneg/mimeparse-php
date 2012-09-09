@@ -197,15 +197,17 @@ class Mimeparse
      * must be a string that conforms to the format of the HTTP Accept:
      * header. The value of supported is an Enumerable of mime-types
      *
+     * In case of ties the mime-type closest to the beginning of the 
+     * $supported array will be used.
+     *
      * Mimeparse::bestMatch(array("application/xbel+xml", "text/xml"), "text/*;q=0.5,*\/*; q=0.1")
      * => "text/xml"
      *
      * @param  array  $supported
      * @param  string $header
-     * @param  string $tieBreaker In case of a tie, this mime-type is preferred
      * @return mixed  $mimeType or NULL
      */
-    public static function bestMatch($supported, $header, $tieBreaker = null)
+    public static function bestMatch($supported, $header)
     {
         $parsedHeader = explode(',', $header);
 
@@ -214,32 +216,26 @@ class Mimeparse
         }
 
         $weightedMatches = array();
-        foreach ($supported as $mimeType) {
+        foreach ($supported as $index => $mimeType) {
             list($quality, $fitness) = self::qualityAndFitnessParsed($mimeType, $parsedHeader);
             if (!empty($quality)) {
+                // Mime-types closer to the beginning of the array are 
+                // preferred. This preference score is used to break ties.
+                $preference = 0 - $index;
                 $weightedMatches[] = array(
-                    array($quality, $fitness),
+                    array($quality, $fitness, $preference),
                     $mimeType
                 );
             }
         }
 
+        // Note that since fitness and preference are present in 
+        // $weightedMatches they will also be used when sorting (after quality 
+        // level).
         array_multisort($weightedMatches);
-        $a = array_pop($weightedMatches);
+        $firstChoice = array_pop($weightedMatches);
 
-        // If there's a tie breaker specified, see if we have any ties
-        // and then break them with the $tieBreaker
-        if ($tieBreaker) {
-            array_push($weightedMatches, $a);
-            $ties = array_filter($weightedMatches, function ($val) use ($a) {
-                return ($val[0] == $a[0]);
-            });
-            if (count($ties) > 1 && in_array(array($a[0], $tieBreaker), $ties)) {
-                return $tieBreaker;
-            }
-        }
-
-        return (empty($a[0][0]) ? null : $a[1]);
+        return (empty($firstChoice[0][0]) ? null : $firstChoice[1]);
     }
 
     /**
