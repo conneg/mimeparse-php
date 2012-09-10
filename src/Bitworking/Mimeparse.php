@@ -23,7 +23,7 @@ class Mimeparse
      *
      * 1. type: The type categorization.
      * 2. subtype: The subtype categorization.
-     * 3. params: A hash of all the parameters for the media range.
+     * 3. params: An associative array of all the parameters for the media range.
      * 4. format: The content format.
      *
      * For example, the media range "application/xhtml+xml;q=0.5" would
@@ -73,9 +73,9 @@ class Mimeparse
 
 
     /**
-     * Carves up a media range and returns an Array of the
-     * [type, subtype, params] where "params" is a Hash of all
-     * the parameters for the media range.
+     * Carves up a media range and returns an array of the
+     * [type, subtype, params] where "params" is an associative
+     * array of all the parameters for the media range.
      *
      * For example, the media range "application/*;q=0.5" would
      * get parsed into:
