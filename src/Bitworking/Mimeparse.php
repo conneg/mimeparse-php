@@ -117,7 +117,7 @@ class Mimeparse
      * @param array  $parsedRanges
      * @return array ($bestFitness, $bestFitQuality)
      */
-    protected static function fitnessAndQualityParsed($mimeType, $parsedRanges)
+    protected static function qualityAndFitnessParsed($mimeType, $parsedRanges)
     {
         $bestFitness = -1;
         $bestFitQuality = 0;
@@ -164,7 +164,7 @@ class Mimeparse
      */
     protected static function qualityParsed($mimeType, $parsedRanges)
     {
-        list($q, $fitness) = self::fitnessAndQualityParsed($mimeType, $parsedRanges);
+        list($q, $fitness) = self::qualityAndFitnessParsed($mimeType, $parsedRanges);
         return $q;
     }
 
@@ -216,7 +216,7 @@ class Mimeparse
         $weightedMatches = array();
         foreach ($supported as $mimeType) {
             $weightedMatches[] = array(
-                self::fitnessAndQualityParsed($mimeType, $parsedHeader),
+                self::qualityAndFitnessParsed($mimeType, $parsedHeader),
                 $mimeType
             );
         }
