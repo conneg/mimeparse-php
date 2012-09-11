@@ -24,12 +24,13 @@ class Mimeparse
      * 1. type: The type categorization.
      * 2. subtype: The subtype categorization.
      * 3. params: An associative array of all the parameters for the media range.
-     * 4. format: The content format.
+     * 4. generic subtype: A more generic subtype, if one is present. See
+     *    http://tools.ietf.org/html/rfc3023#appendix-A.12
      *
      * For example, the media range "application/xhtml+xml;q=0.5" would
      * get parsed into:
      *
-     * array("application", "xhtml", array( "q" => "0.5" ), "xml")
+     * array("application", "xhtml+xml", array( "q" => "0.5" ), "xml")
      *
      * @param string $mimeType
      * @return array ($type, $subtype, $params)
@@ -61,14 +62,14 @@ class Mimeparse
             throw new \UnexpectedValueException('malformed mime type');
         }
 
-        if (false !== strpos($subtype, '+')) {
-            // don't rewrite subtype to prevent compatibility issues
-            list(/*$subtype*/, $format) = explode('+', $subtype, 2);
+        $plusPos = strpos($subtype, '+');
+        if (false !== $plusPos) {
+            $genericSubtype = substr($subtype, $plusPos + 1);
         } else {
-            $format = $subtype;
+            $genericSubtype = $subtype;
         }
 
-        return array(trim($type), trim($subtype), $params, $format);
+        return array(trim($type), trim($subtype), $params, $genericSubtype);
     }
 
 
