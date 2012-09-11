@@ -5,7 +5,7 @@ use Bitworking\Mimeparse;
 
 class MimeparseTest extends \PHPUnit_Framework_TestCase
 {
-    public function testParseMimeTypeWith()
+    public function testParseMediaRange()
     {
         $expected = array(
             'application',
@@ -14,10 +14,10 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             'xml'
         );
         
-        $this->assertEquals($expected, Mimeparse::parseMimeType('application/xml; q=1'));
+        $this->assertEquals($expected, Mimeparse::parseMediaRange('application/xml; q=1'));
     }
     
-    public function testParseMimeTypeWithFormat()
+    public function testParseMediaRangeWithGenericSubtype()
     {
         $expected = array(
             'application',
@@ -26,10 +26,10 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             'xml'
         );
         
-        $this->assertEquals($expected, Mimeparse::parseMimeType('application/xhtml+xml; q=1'));
+        $this->assertEquals($expected, Mimeparse::parseMediaRange('application/xhtml+xml; q=1'));
     }
 
-    public function testParseMimeTypeWithSingleWildCard()
+    public function testParseMediaRangeWithSingleWildCard()
     {
         $expected = array(
             '*',
@@ -38,33 +38,34 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             '*'
         );
 
-        $this->assertEquals($expected, Mimeparse::parseMimeType('*'));
+        $this->assertEquals($expected, Mimeparse::parseMediaRange('*'));
     }
 
     /**
      * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage malformed mime type
+     * @expectedExceptionMessage Malformed media-range: application/;q=1
      */
-    public function testParseMimeTypeWithMalformedMimeType()
+    public function testParseMediaRangeWithMalformedMediaRange()
     {
-        $parsed = Mimeparse::parseMimeType('application/;q=1');
+        $parsed = Mimeparse::parseMediaRange('application/;q=1');
     }
 
     /**
      * Testing this protected method because it includes a lot of parsing
      * functionality that we wish to isolate from other tests.
      *
-     * @covers Bitworking\Mimeparse::parseMediaRange
+     * @covers Bitworking\Mimeparse::parseAndNormalizeMediaRange
      */
-    public function testParseMediaRange()
+    public function testParseAndNormalizeMediaRange()
     {
-        $method = new \ReflectionMethod('Bitworking\Mimeparse', 'parseMediaRange');
+        $method = new \ReflectionMethod('Bitworking\Mimeparse', 'parseAndNormalizeMediaRange');
         $method->setAccessible(true);
 
         $expected1 = array(
             0 => 'application',
             1 => 'xml',
             2 => array('q' => '1'),
+            3 => 'xml',
         );
 
         $this->assertEquals($expected1, $method->invoke(null, 'application/xml;q=1'));
@@ -75,6 +76,7 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             0 => 'application',
             1 => 'xml',
             2 => array('q' => '1', 'b' => 'other'),
+            3 => 'xml',
         );
 
         $this->assertEquals($expected2, $method->invoke(null, 'application/xml ; q=1;b=other'));
@@ -85,13 +87,14 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             0 => '*',
             1 => '*',
             2 => array('q' => '.2'),
+            3 => '*',
         ), $method->invoke(null, ' *; q=.2'));
     }
 
     /**
      * @covers Bitworking\Mimeparse::quality
      * @covers Bitworking\Mimeparse::qualityParsed
-     * @covers Bitworking\Mimeparse::fitnessAndQualityParsed
+     * @covers Bitworking\Mimeparse::qualityAndFitnessParsed
      */
     public function testQuality()
     {
@@ -122,10 +125,10 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('application/xml', Mimeparse::bestMatch($supportedMimeTypes1, 'application/xml; q=1'));
 
         // match using a subtype wildcard
-        $this->assertEquals('application/xml', Mimeparse::bestMatch($supportedMimeTypes1, 'application/*; q=1'));
+        $this->assertEquals('application/xbel+xml', Mimeparse::bestMatch($supportedMimeTypes1, 'application/*; q=1'));
 
         // match using a type wildcard
-        $this->assertEquals('application/xml', Mimeparse::bestMatch($supportedMimeTypes1, '* / *'));
+        $this->assertEquals('application/xbel+xml', Mimeparse::bestMatch($supportedMimeTypes1, '* / *'));
 
 
         $supportedMimeTypes2 = array('application/xbel+xml', 'text/xml');
@@ -195,34 +198,13 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers Bitworking\Mimeparse::bestMatch
      */
-    public function testBestMatchWithTieBreaker()
+    public function testBestMatchWithTies()
     {
-        $supportedMimeTypes = array('text/html', 'application/json', 'application/hal+xml', 'application/hal+json');
+        $supportedMimeTypes1 = array('text/html', 'application/json', 'application/hal+xml', 'application/hal+json');
+        $supportedMimeTypes2 = array('text/html', 'application/hal+json', 'application/json', 'application/hal+xml');
         $httpAcceptHeader = 'application/*, text/*;q=0.8';
 
-        $this->assertEquals('application/json', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader));
-        $this->assertEquals('application/hal+json', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader, 'application/hal+json'));
-    }
-
-    /**
-     * @covers Bitworking\Mimeparse::bestMatch
-     */
-    public function testBestMatchWithTieBreakerAndNoTies()
-    {
-        $supportedMimeTypes = array('text/html', 'application/hal+json');
-        $httpAcceptHeader = 'application/*, text/*;q=0.8';
-
-        $this->assertEquals('application/hal+json', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader, 'application/hal+json'));
-    }
-
-    /**
-     * @covers Bitworking\Mimeparse::bestMatch
-     */
-    public function testBestMatchWithTieBreakerNotMatchingTies()
-    {
-        $supportedMimeTypes = array('text/html', 'application/hal+xml', 'application/hal+json');
-        $httpAcceptHeader = 'application/*';
-
-        $this->assertEquals('application/hal+xml', Mimeparse::bestMatch($supportedMimeTypes, $httpAcceptHeader, 'text/html'));
+        $this->assertEquals('application/json', Mimeparse::bestMatch($supportedMimeTypes1, $httpAcceptHeader));
+        $this->assertEquals('application/hal+json', Mimeparse::bestMatch($supportedMimeTypes2, $httpAcceptHeader));
     }
 }
