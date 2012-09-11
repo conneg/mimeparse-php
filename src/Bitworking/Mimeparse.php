@@ -215,23 +215,13 @@ class Mimeparse
 
         $weightedMatches = array();
         foreach ($supported as $mimeType) {
-            $weightedMatches[] = array(
-                self::qualityAndFitnessParsed($mimeType, $parsedHeader),
-                $mimeType
-            );
-        }
-
-        // If the best fit quality is 0 for anything, then it is
-        // not acceptable for the client; remove it from the list
-        // of weighted matches.
-        $unacceptableTypes = array();
-        foreach ($weightedMatches as $k => $v) {
-            if (empty($v[0][0])) {
-                $unacceptableTypes[] = $k;
+            list($quality, $fitness) = self::qualityAndFitnessParsed($mimeType, $parsedHeader);
+            if (!empty($quality)) {
+                $weightedMatches[] = array(
+                    array($quality, $fitness),
+                    $mimeType
+                );
             }
-        }
-        foreach ($unacceptableTypes as $weightedMatchKey) {
-            unset($weightedMatches[$weightedMatchKey]);
         }
 
         array_multisort($weightedMatches);
