@@ -1,10 +1,11 @@
 <?php
 /**
- * Mimeparse class. This class provides basic functions for handling mime-types. It can
- * handle matching mime-types against a list of media-ranges. See section
- * 14.1 of the HTTP specification [RFC 2616] for a complete explanation.
+ * Mimeparse class. Provides basic functions for handling mime-types. It can
+ * match mime-types against a list of media-ranges. See section 14.1 of the
+ * HTTP specification [RFC 2616] for a complete explanation.
  *
- * It's just a port to php from original Python code (http://code.google.com/p/mimeparse/).
+ * It's a PHP port of the original Python code
+ * (http://code.google.com/p/mimeparse/).
  *
  * Ported from version 0.1.2. Comments are mostly excerpted from the original.
  *
@@ -17,27 +18,30 @@ namespace Bitworking;
 class Mimeparse
 {
     /**
-     * Parses a mime-type and returns an array with its components.
+     * Parses a media-range and returns an array with its components.
      *
-     * The array returned contains:
+     * The returned array contains:
      *
      * 1. type: The type categorization.
      * 2. subtype: The subtype categorization.
-     * 3. params: A hash of all the parameters for the media range.
-     * 4. format: The content format.
+     * 3. params: An associative array of all the parameters for the
+     *    media-range.
+     * 4. generic subtype: A more generic subtype, if one is present. See
+     *    http://tools.ietf.org/html/rfc3023#appendix-A.12
      *
-     * For example, the media range "application/xhtml+xml;q=0.5" would
-     * get parsed into:
+     * For example, the media-range "application/xhtml+xml;q=0.5" would get
+     * parsed into:
      *
-     * array("application", "xhtml", array( "q" => "0.5" ), "xml")
+     * array("application", "xhtml+xml", array( "q" => "0.5" ), "xml")
      *
-     * @param string $mimeType
-     * @return array ($type, $subtype, $params)
-     * @throws UnexpectedValueException when $mimeType does not include a valid subtype
+     * @param string $mediaRange
+     * @return array ($type, $subtype, $params, $genericSubtype)
+     * @throws UnexpectedValueException when $mediaRange does not include a
+     * valid subtype
      */
-    public static function parseMimeType($mimeType)
+    public static function parseMediaRange($mediaRange)
     {
-        $parts = explode(';', $mimeType);
+        $parts = explode(';', $mediaRange);
 
         $params = array();
         foreach ($parts as $i => $param) {
@@ -49,8 +53,8 @@ class Mimeparse
 
         $fullType = trim($parts[0]);
 
-        // Java URLConnection class sends an Accept header that includes a single "*"
-        // Turn it into a legal wildcard.
+        // Java URLConnection class sends an Accept header that includes a
+        // single "*". Turn it into a legal wildcard.
         if ($fullType == '*') {
             $fullType = '*/*';
         }
@@ -58,69 +62,63 @@ class Mimeparse
         list($type, $subtype) = explode('/', $fullType);
 
         if (!$subtype) {
-            throw new \UnexpectedValueException('malformed mime type');
+            throw new \UnexpectedValueException('Malformed media-range: '.$mediaRange);
         }
 
-        if (false !== strpos($subtype, '+')) {
-            // don't rewrite subtype to prevent compatibility issues
-            list(/*$subtype*/, $format) = explode('+', $subtype, 2);
+        $plusPos = strpos($subtype, '+');
+        if (false !== $plusPos) {
+            $genericSubtype = substr($subtype, $plusPos + 1);
         } else {
-            $format = $subtype;
+            $genericSubtype = $subtype;
         }
 
-        return array(trim($type), trim($subtype), $params, $format);
+        return array(trim($type), trim($subtype), $params, $genericSubtype);
     }
 
 
     /**
-     * Carves up a media range and returns an Array of the
-     * [type, subtype, params] where "params" is a Hash of all
-     * the parameters for the media range.
+     * Parses a media-range via Mimeparse::parseMediaRange() and guarantees that
+     * there is a value for the "q" param, filling it in with a proper default
+     * if necessary.
      *
-     * For example, the media range "application/*;q=0.5" would
-     * get parsed into:
-     *
-     * array("application", "*", ( "q", "0.5" ))
-     *
-     * In addition this function also guarantees that there
-     * is a value for "q" in the params dictionary, filling it
-     * in with a proper default if necessary.
-     *
-     * @param string $range
-     * @return array ($type, $subtype, $params)
+     * @param string $mediaRange
+     * @return array ($type, $subtype, $params, $genericSubtype)
      */
-    protected static function parseMediaRange($range)
+    protected static function parseAndNormalizeMediaRange($mediaRange)
     {
-        list($type, $subtype, $params) = self::parseMimeType($range);
+        $parsedMediaRange = self::parseMediaRange($mediaRange);
+        $params = $parsedMediaRange[2];
 
         if (!isset($params['q'])
             || !is_numeric($params['q'])
             || floatval($params['q']) > 1
             || floatval($params['q']) < 0
         ) {
-            $params['q'] = '1';
+            $parsedMediaRange[2]['q'] = '1';
         }
 
-        return array($type, $subtype, $params);
+        return $parsedMediaRange;
     }
 
     /**
      * Find the best match for a given mime-type against a list of
-     * media-ranges that have already been parsed by Mimeparse::parseMediaRange()
+     * media-ranges that have already been parsed by
+     * Mimeparse::parseAndNormalizeMediaRange()
      *
-     * Returns the fitness and the "q" quality parameter of the best match, or an
-     * array [-1, 0] if no match was found. Just as for Mimeparse::quality(),
-     * $parsedRanges must be an Enumerable of parsed media-ranges.
+     * Returns the fitness and the "q" quality parameter of the best match, or
+     * an array [-1, 0] if no match was found. Just as for
+     * Mimeparse::quality(), $parsedRanges must be an array of parsed
+     * media-ranges.
      *
      * @param string $mimeType
      * @param array  $parsedRanges
-     * @return array ($bestFitness, $bestFitQuality)
+     * @return array ($bestFitQuality, $bestFitness)
      */
-    protected static function fitnessAndQualityParsed($mimeType, $parsedRanges)
+    protected static function qualityAndFitnessParsed($mimeType, $parsedRanges)
     {
         $bestFitness = -1;
         $bestFitQuality = 0;
-        list($targetType, $targetSubtype, $targetParams) = self::parseMediaRange($mimeType);
+        list($targetType, $targetSubtype, $targetParams) = self::parseAndNormalizeMediaRange($mimeType);
 
         foreach ($parsedRanges as $item) {
             list($type, $subtype, $params) = $item;
@@ -151,11 +149,12 @@ class Mimeparse
 
     /**
      * Find the best match for a given mime-type against a list of
-     * media-ranges that have already been parsed by Mimeparse::parseMediaRange()
+     * media-ranges that have already been parsed by
+     * Mimeparse::parseAndNormalizeMediaRange()
      *
-     * Returns the "q" quality parameter of the best match, 0 if no match
-     * was found. This function behaves the same as Mimeparse::quality() except that
-     * $parsedRanges must be an Enumerable of parsed media-ranges.
+     * Returns the "q" quality parameter of the best match, 0 if no match was
+     * found. This function behaves the same as Mimeparse::quality() except
+     * that $parsedRanges must be an array of parsed media-ranges.
      *
      * @param string $mimeType
      * @param array  $parsedRanges
@@ -163,13 +162,13 @@ class Mimeparse
      */
     protected static function qualityParsed($mimeType, $parsedRanges)
     {
-        list($q, $fitness) = self::fitnessAndQualityParsed($mimeType, $parsedRanges);
+        list($q, $fitness) = self::qualityAndFitnessParsed($mimeType, $parsedRanges);
         return $q;
     }
 
     /**
-     * Returns the quality "q" of a mime-type when compared against
-     * the media-ranges in ranges. For example:
+     * Returns the quality "q" of a mime-type when compared against the
+     * media-ranges in ranges. For example:
      *
      * Mimeparse::quality("text/html", "text/*;q=0.3, text/html;q=0.7,
      * text/html;level=1, text/html;level=2;q=0.4, *\/*;q=0.5")
@@ -184,71 +183,57 @@ class Mimeparse
         $parsedRanges = explode(',', $ranges);
 
         foreach ($parsedRanges as $i => $r) {
-            $parsedRanges[$i] = self::parseMediaRange($r);
+            $parsedRanges[$i] = self::parseAndNormalizeMediaRange($r);
         }
 
         return self::qualityParsed($mimeType, $parsedRanges);
     }
 
     /**
-     * Takes a list of supported mime-types and finds the best match
-     * for all the media-ranges listed in header. The value of header
-     * must be a string that conforms to the format of the HTTP Accept:
-     * header. The value of supported is an Enumerable of mime-types
+     * Takes a list of supported mime-types and finds the best match for all
+     * the media-ranges listed in header. The value of $header must be a
+     * string that conforms to the format of the HTTP Accept: header. The
+     * value of $supported is an array of mime-types.
+     *
+     * In case of ties the mime-type with the lowest index in $supported will
+     * be used.
      *
      * Mimeparse::bestMatch(array("application/xbel+xml", "text/xml"), "text/*;q=0.5,*\/*; q=0.1")
      * => "text/xml"
      *
      * @param  array  $supported
      * @param  string $header
-     * @param  string $tieBreaker In case of a tie, this mime-type is preferred
      * @return mixed  $mimeType or NULL
      */
-    public static function bestMatch($supported, $header, $tieBreaker = null)
+    public static function bestMatch($supported, $header)
     {
         $parsedHeader = explode(',', $header);
 
         foreach ($parsedHeader as $i => $r) {
-            $parsedHeader[$i] = self::parseMediaRange($r);
+            $parsedHeader[$i] = self::parseAndNormalizeMediaRange($r);
         }
 
         $weightedMatches = array();
-        foreach ($supported as $mimeType) {
-            $weightedMatches[] = array(
-                self::fitnessAndQualityParsed($mimeType, $parsedHeader),
-                $mimeType
-            );
-        }
-
-        // If the best fit quality is 0 for anything, then it is
-        // not acceptable for the client; remove it from the list
-        // of weighted matches.
-        $unacceptableTypes = array();
-        foreach ($weightedMatches as $k => $v) {
-            if (empty($v[0][0])) {
-                $unacceptableTypes[] = $k;
+        foreach ($supported as $index => $mimeType) {
+            list($quality, $fitness) = self::qualityAndFitnessParsed($mimeType, $parsedHeader);
+            if (!empty($quality)) {
+                // Mime-types closer to the beginning of the array are 
+                // preferred. This preference score is used to break ties.
+                $preference = 0 - $index;
+                $weightedMatches[] = array(
+                    array($quality, $fitness, $preference),
+                    $mimeType
+                );
             }
         }
-        foreach ($unacceptableTypes as $weightedMatchKey) {
-            unset($weightedMatches[$weightedMatchKey]);
-        }
 
+        // Note that since fitness and preference are present in 
+        // $weightedMatches they will also be used when sorting (after quality 
+        // level).
         array_multisort($weightedMatches);
-        $a = array_pop($weightedMatches);
+        $firstChoice = array_pop($weightedMatches);
 
-        // If there's a tie breaker specified, see if we have any ties
-        // and then break them with the $tieBreaker
-        if ($tieBreaker) {
-            array_push($weightedMatches, $a);
-            $ties = array_filter($weightedMatches, function ($val) use ($a) {
-                return ($val[0] == $a[0]);
-            });
-            if (count($ties) > 1 && in_array(array($a[0], $tieBreaker), $ties)) {
-                return $tieBreaker;
-            }
-        }
-
-        return (empty($a[0][0]) ? null : $a[1]);
+        return (empty($firstChoice[0][0]) ? null : $firstChoice[1]);
     }
 
     /**
