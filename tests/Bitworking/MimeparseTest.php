@@ -149,13 +149,26 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('application/json', Mimeparse::bestMatch($supportedMimeTypes3, 'application/json, text/html;q=0.9'));
 
 
-        $supportedMimeTypes4 = array('image/*', 'application/xml');
+        $supportedMimeTypes4 = array('*/*', 'image/*', 'text/*', 'application/xml');
 
         // match using a type wildcard
         $this->assertEquals('image/*', Mimeparse::bestMatch($supportedMimeTypes4, 'image/png'));
 
-        // match using a wildcard for both requested and supported
+        // match using wildcards for both requested and supported
         $this->assertEquals('image/*', Mimeparse::bestMatch($supportedMimeTypes4, 'image/*'));
+
+        // match using wildcards where non-wildcard should be more fit
+        $this->assertEquals('application/xml', Mimeparse::bestMatch($supportedMimeTypes4, 'application/xml,image/*'));
+
+        // match using wildcards where more-specific wildcard should be more fit
+        $this->assertEquals('image/*', Mimeparse::bestMatch($supportedMimeTypes4, '*/*,image/*'));
+
+        // match using tied wildcards to ensure $supported preference is respected
+        $this->assertEquals('image/*', Mimeparse::bestMatch($supportedMimeTypes4, 'text/*,image/*'));
+
+        // match using a wildcard which has a higher quality than a non-wildcard
+        $this->assertEquals('image/*', Mimeparse::bestMatch($supportedMimeTypes4, 'application/xml;q=0.9,image/*'));
+
     }
 
     /**

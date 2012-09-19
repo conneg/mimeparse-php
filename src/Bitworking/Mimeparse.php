@@ -133,8 +133,8 @@ class Mimeparse
                     }
                 }
 
-                $fitness  = ($type == $targetType) ? 100 : 0;
-                $fitness += ($subtype == $targetSubtype) ? 10 : 0;
+                $fitness  = ($type == $targetType && $targetType != '*') ? 100 : 0;
+                $fitness += ($subtype == $targetSubtype && $targetSubtype != '*') ? 10 : 0;
                 $fitness += $paramMatches;
 
                 if ($fitness > $bestFitness) {
