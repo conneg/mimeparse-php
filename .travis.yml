@@ -3,9 +3,10 @@ language: php
 php:
   - 5.3
   - 5.4
+  - 5.5
+  - hhvm
 
 before_script:
-  - curl -s http://getcomposer.org/installer | php -- --quiet
-  - php composer.phar install
+  - composer install --dev --prefer-source
 
-script: phpunit
+script: ./vendor/bin/phpunit --coverage-text
