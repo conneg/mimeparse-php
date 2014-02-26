@@ -217,7 +217,7 @@ class Mimeparse
         foreach ($supported as $index => $mimeType) {
             list($quality, $fitness) = self::qualityAndFitnessParsed($mimeType, $parsedHeader);
             if (!empty($quality)) {
-                // Mime-types closer to the beginning of the array are 
+                // Mime-types closer to the beginning of the array are
                 // preferred. This preference score is used to break ties.
                 $preference = 0 - $index;
                 $weightedMatches[] = array(
@@ -227,8 +227,8 @@ class Mimeparse
             }
         }
 
-        // Note that since fitness and preference are present in 
-        // $weightedMatches they will also be used when sorting (after quality 
+        // Note that since fitness and preference are present in
+        // $weightedMatches they will also be used when sorting (after quality
         // level).
         array_multisort($weightedMatches);
         $firstChoice = array_pop($weightedMatches);

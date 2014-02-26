@@ -13,10 +13,10 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             array('q' => '1'),
             'xml'
         );
-        
+
         $this->assertEquals($expected, Mimeparse::parseMediaRange('application/xml; q=1'));
     }
-    
+
     public function testParseMediaRangeWithGenericSubtype()
     {
         $expected = array(
@@ -25,7 +25,7 @@ class MimeparseTest extends \PHPUnit_Framework_TestCase
             array('q' => '1'),
             'xml'
         );
-        
+
         $this->assertEquals($expected, Mimeparse::parseMediaRange('application/xhtml+xml; q=1'));
     }
 
