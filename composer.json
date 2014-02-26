@@ -29,6 +29,6 @@
         "phpunit/phpunit": "~3.7"
     },
     "autoload": {
-        "psr-0": { "Bitworking": "src/" }
+        "psr-4": { "Bitworking\\": "src/Bitworking/" }
     }
 }
