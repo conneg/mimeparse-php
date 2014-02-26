@@ -1,6 +1,9 @@
 # Bitworking\Mimeparse
 
 [![Build Status](https://secure.travis-ci.org/ramsey/mimeparse.png)](http://travis-ci.org/ramsey/mimeparse)
+[![Latest Stable Version](https://poser.pugx.org/bitworking/mimeparse/v/stable.png)](https://packagist.org/packages/bitworking/mimeparse)
+[![Latest Unstable Version](https://poser.pugx.org/bitworking/mimeparse/v/unstable.png)](https://packagist.org/packages/bitworking/mimeparse)
+[![Total Downloads](https://poser.pugx.org/bitworking/mimeparse/downloads.png)](https://packagist.org/packages/bitworking/mimeparse)
 
 This library provides basic functionality for parsing mime-types names and
 matching them against a list of media-ranges. See [section 14.1][http-accept] of
@@ -9,8 +12,8 @@ information on the library can be found in the XML.com article
 "[Just use Media Types?][jgregorio-restful]"
 
 This library was taken from the [original mimeparse library][mimeparse]
-on Google Project Hosting and has been cleaned up to conform to [PSR-0][],
-[PSR-1][], and [PSR-2][] standards. It also now has support for [Composer][].
+on Google Project Hosting and has been cleaned up to conform to [PSR-1][],
+[PSR-2][], and [PSR-4][] standards. It also now has support for [Composer][].
 The Bitworking namespace is a nod to [Joe Gregorio][jgregorio], the original
 author of this library.
 
@@ -49,7 +52,7 @@ and install the latest version of the Mimeparse library into your project:
 ```json
 {
     "require": {
-        "bitworking/mimeparse": "*"
+        "bitworking/mimeparse": "~2.1"
     }
 }
 ```
@@ -59,9 +62,9 @@ and install the latest version of the Mimeparse library into your project:
 [http]: http://tools.ietf.org/html/rfc2616
 [jgregorio-restful]: http://www.xml.com/pub/a/2005/06/08/restful.html
 [mimeparse]: http://code.google.com/p/mimeparse/
-[PSR-0]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
-[PSR-1]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
-[PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
+[PSR-1]: http://www.php-fig.org/psr/psr-1/
+[PSR-2]: http://www.php-fig.org/psr/psr-2/
+[PSR-4]: http://www.php-fig.org/psr/psr-4/
 [composer]: http://getcomposer.org/
 [jgregorio]: http://bitworking.org/
 [packagist]: http://packagist.org/
