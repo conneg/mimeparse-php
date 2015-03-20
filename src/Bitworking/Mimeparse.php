@@ -124,8 +124,8 @@ class Mimeparse
             list($type, $subtype, $params) = $item;
 
             if (($type == $targetType || $type == '*' || $targetType == '*')
-                && ($subtype == $targetSubtype || $subtype == '*' || $targetSubtype == '*')) {
-
+                && ($subtype == $targetSubtype || $subtype == '*' || $targetSubtype == '*')
+            ) {
                 $paramMatches = 0;
                 foreach ($targetParams as $k => $v) {
                     if ($k != 'q' && isset($params[$k]) && $v == $params[$k]) {
@@ -245,4 +245,3 @@ class Mimeparse
     {
     }
 }
-
