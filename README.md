@@ -1,9 +1,11 @@
 # Bitworking\Mimeparse
 
-[![Build Status](https://secure.travis-ci.org/ramsey/mimeparse.png)](http://travis-ci.org/ramsey/mimeparse)
-[![Latest Stable Version](https://poser.pugx.org/bitworking/mimeparse/v/stable.png)](https://packagist.org/packages/bitworking/mimeparse)
-[![Latest Unstable Version](https://poser.pugx.org/bitworking/mimeparse/v/unstable.png)](https://packagist.org/packages/bitworking/mimeparse)
-[![Total Downloads](https://poser.pugx.org/bitworking/mimeparse/downloads.png)](https://packagist.org/packages/bitworking/mimeparse)
+[![Build Status](https://travis-ci.org/ramsey/mimeparse.svg?branch=master)](https://travis-ci.org/ramsey/mimeparse)
+[![Coverage Status](https://coveralls.io/repos/ramsey/mimeparse/badge.svg?branch=master)](https://coveralls.io/r/ramsey/mimeparse)
+[![Latest Stable Version](https://poser.pugx.org/bitworking/mimeparse/v/stable.svg)](https://packagist.org/packages/bitworking/mimeparse)
+[![Total Downloads](https://poser.pugx.org/bitworking/mimeparse/downloads.svg)](https://packagist.org/packages/bitworking/mimeparse)
+[![Latest Unstable Version](https://poser.pugx.org/bitworking/mimeparse/v/unstable.svg)](https://packagist.org/packages/bitworking/mimeparse)
+[![License](https://poser.pugx.org/bitworking/mimeparse/license.svg)](https://packagist.org/packages/bitworking/mimeparse)
 
 This library provides basic functionality for parsing mime-types names and
 matching them against a list of media-ranges. See [section 14.1][http-accept] of
@@ -45,16 +47,10 @@ echo $quality; // Should echo 0.7
 
 ## Installation
 
-The preferred method of installation is via [Packagist][], as this provides
-the PSR-0 autoloader functionality. The following `composer.json` will download
-and install the latest version of the Mimeparse library into your project:
+The preferred method of installation is via [Composer][]:
 
-```json
-{
-    "require": {
-        "bitworking/mimeparse": "~2.1"
-    }
-}
+```
+php composer.phar require bitworking/mimeparse
 ```
 
 
@@ -67,5 +63,3 @@ and install the latest version of the Mimeparse library into your project:
 [PSR-4]: http://www.php-fig.org/psr/psr-4/
 [composer]: http://getcomposer.org/
 [jgregorio]: http://bitworking.org/
-[packagist]: http://packagist.org/
-
