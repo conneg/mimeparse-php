@@ -1,5 +1,11 @@
 # Bitworking\Mimeparse Changelog
 
+## 2.1.2
+
+_Released 2015-04-25_
+
+* Changed repository ownership to <https://github.com/conneg> and updated Packagist and URLs accordingly
+
 ## 2.1.1
 
 _Released 2015-03-20_
