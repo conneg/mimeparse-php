@@ -18,8 +18,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/ramsey/mimeparse/issues",
-        "source": "https://github.com/ramsey/mimeparse"
+        "issues": "https://github.com/conneg/mimeparse-php/issues",
+        "source": "https://github.com/conneg/mimeparse-php"
     },
     "require": {
         "php": ">=5.3.2"
