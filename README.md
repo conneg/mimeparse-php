@@ -1,11 +1,8 @@
 # Bitworking\Mimeparse
 
-[![Build Status](https://travis-ci.org/ramsey/mimeparse.svg?branch=master)](https://travis-ci.org/ramsey/mimeparse)
-[![Coverage Status](https://coveralls.io/repos/ramsey/mimeparse/badge.svg?branch=master)](https://coveralls.io/r/ramsey/mimeparse)
-[![Latest Stable Version](https://poser.pugx.org/bitworking/mimeparse/v/stable.svg)](https://packagist.org/packages/bitworking/mimeparse)
-[![Total Downloads](https://poser.pugx.org/bitworking/mimeparse/downloads.svg)](https://packagist.org/packages/bitworking/mimeparse)
-[![Latest Unstable Version](https://poser.pugx.org/bitworking/mimeparse/v/unstable.svg)](https://packagist.org/packages/bitworking/mimeparse)
-[![License](https://poser.pugx.org/bitworking/mimeparse/license.svg)](https://packagist.org/packages/bitworking/mimeparse)
+[![Build Status](https://travis-ci.org/conneg/mimeparse-php.svg?branch=master)](https://travis-ci.org/conneg/mimeparse-php)
+[![Coverage Status](https://coveralls.io/repos/conneg/mimeparse-php/badge.svg)](https://coveralls.io/r/conneg/mimeparse-php)
+[![Latest Stable Version](https://poser.pugx.org/bitworking/mimeparse/v/stable)](https://packagist.org/packages/bitworking/mimeparse) [![Total Downloads](https://poser.pugx.org/bitworking/mimeparse/downloads)](https://packagist.org/packages/bitworking/mimeparse) [![Latest Unstable Version](https://poser.pugx.org/bitworking/mimeparse/v/unstable)](https://packagist.org/packages/bitworking/mimeparse) [![License](https://poser.pugx.org/bitworking/mimeparse/license)](https://packagist.org/packages/bitworking/mimeparse)
 
 This library provides basic functionality for parsing mime-types names and
 matching them against a list of media-ranges. See [section 14.1][http-accept] of
