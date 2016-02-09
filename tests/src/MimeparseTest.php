@@ -1,5 +1,5 @@
 <?php
-namespace Bitworking;
+namespace Bitworking\Test;
 
 use Bitworking\Mimeparse;
 

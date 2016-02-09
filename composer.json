@@ -34,6 +34,13 @@
         "apigen/apigen": "^4.1"
     },
     "autoload": {
-        "psr-4": { "Bitworking\\": "src/Bitworking/" }
+        "psr-4": {
+            "Bitworking\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Bitworking\\Test\\": "tests/src/"
+        }
     }
 }
