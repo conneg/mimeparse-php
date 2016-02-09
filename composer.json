@@ -1,8 +1,9 @@
 {
     "name": "bitworking/mimeparse",
-    "description": "Basic functions for handling mime-types, forked from Joe Gregorio's mimeparse library <http://code.google.com/p/mimeparse/>.",
+    "description": "Basic functions for handling mime-types.",
     "type": "library",
     "keywords": ["http", "accept", "mime"],
+    "homepage": "https://github.com/conneg/mimeparse-php",
     "license": "MIT",
     "authors": [
         {
@@ -14,6 +15,7 @@
         },
         {
             "name": "Ben Ramsey",
+            "email": "ben@benramsey.com",
             "homepage": "http://benramsey.com"
         }
     ],
