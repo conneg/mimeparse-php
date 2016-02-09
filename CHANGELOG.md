@@ -1,13 +1,11 @@
-# Bitworking\Mimeparse Changelog
+# bitworking/mimeparse Changelog
 
 ## 2.2.0
 
 _Released 2016-02-09_
 
-* Remove namespaced folder in accordance with PSR-4
-
-  This does not change functionality or affect code using this library in any way.
-
+* Remove namespaced folder in accordance with PSR-4  
+_This does not change functionality or affect code using this library in any way._
 * Update test runner on Travis CI to use latest testing tools
 * Add rules for Scrutinizer
 * Update documentation and add contributing documentation
