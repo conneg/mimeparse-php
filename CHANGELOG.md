@@ -1,5 +1,18 @@
 # Bitworking\Mimeparse Changelog
 
+## 2.2.0
+
+_Released 2016-02-09_
+
+* Remove namespaced folder in accordance with PSR-4
+
+  This does not change functionality or affect code using this library in any way.
+
+* Update test runner on Travis CI to use latest testing tools
+* Add rules for Scrutinizer
+* Update documentation and add contributing documentation
+* Add .gitattributes file to restrict exported files
+
 ## 2.1.2
 
 _Released 2015-04-25_
