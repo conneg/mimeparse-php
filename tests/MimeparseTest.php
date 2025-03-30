@@ -62,6 +62,7 @@ class MimeparseTest extends TestCase
     public function testParseAndNormalizeMediaRange(): void
     {
         $method = new ReflectionMethod('Bitworking\Mimeparse', 'parseAndNormalizeMediaRange');
+        $method->setAccessible(true);
 
         $expected1 = [
             0 => 'application',
