@@ -1,37 +1,48 @@
 {
     "name": "bitworking/mimeparse",
     "description": "Basic functions for handling mime-types.",
-    "type": "library",
-    "keywords": ["http", "accept", "mime"],
-    "homepage": "https://github.com/conneg/mimeparse-php",
     "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "accept",
+        "conneg",
+        "content negotiation",
+        "http",
+        "mime"
+    ],
     "authors": [
         {
             "name": "Joe Gregorio",
-            "homepage": "http://bitworking.org"
+            "homepage": "https://bitworking.org"
         },
         {
             "name": "Andrew \"Venom\" K."
         },
         {
             "name": "Ben Ramsey",
-            "email": "ben@benramsey.com",
-            "homepage": "http://benramsey.com"
+            "email": "ben@ramsey.dev",
+            "homepage": "https://ben.ramsey.dev"
         }
     ],
-    "support": {
-        "issues": "https://github.com/conneg/mimeparse-php/issues",
-        "source": "https://github.com/conneg/mimeparse-php"
-    },
     "require": {
-        "php": ">=5.3.2"
+        "php": "^7.4 || ^8.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.7|^5.0",
-        "squizlabs/php_codesniffer": "^2.3",
-        "jakub-onderka/php-parallel-lint": "^0.9.0",
-        "satooshi/php-coveralls": "^0.6.1"
+        "captainhook/captainhook": "^5.18",
+        "captainhook/plugin-composer": "^5.3",
+        "ergebnis/composer-normalize": "^2.45",
+        "php-parallel-lint/php-console-highlighter": "^1.0",
+        "php-parallel-lint/php-parallel-lint": "^1.4",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^9 || ^10",
+        "ramsey/coding-standard": "^2.1",
+        "ramsey/conventional-commits": "^1.4",
+        "roave/security-advisories": "dev-latest"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Bitworking\\": "src/"
@@ -39,7 +50,63 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Bitworking\\Test\\": "tests/src/"
+            "Bitworking\\Test\\": "tests/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "captainhook/plugin-composer": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true,
+            "php-http/discovery": true,
+            "phpstan/extension-installer": true,
+            "ramsey/composer-repl": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "captainhook": {
+            "force-install": true
+        },
+        "ramsey/conventional-commits": {
+            "configFile": "conventional-commits.json"
+        }
+    },
+    "scripts": {
+        "dev:analyze": [
+            "@dev:analyze:phpstan"
+        ],
+        "dev:analyze:phpstan": "phpstan analyse --ansi",
+        "dev:build:clean": "git clean -fX build/",
+        "dev:lint": [
+            "@dev:lint:syntax",
+            "@dev:lint:style"
+        ],
+        "dev:lint:fix": "phpcbf",
+        "dev:lint:style": "phpcs --colors",
+        "dev:lint:syntax": "parallel-lint --colors src/ tests/",
+        "dev:test": [
+            "@dev:lint",
+            "@dev:analyze",
+            "@dev:test:unit"
+        ],
+        "dev:test:coverage:ci": "@php -d 'xdebug.mode=coverage' vendor/bin/phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
+        "dev:test:coverage:html": "@php -d 'xdebug.mode=coverage' vendor/bin/phpunit --colors=always --coverage-html build/coverage/coverage-html/",
+        "dev:test:unit": "phpunit --colors=always",
+        "test": "@dev:test"
+    },
+    "scripts-descriptions": {
+        "dev:analyze": "Runs all static analysis checks.",
+        "dev:analyze:phpstan": "Runs the PHPStan static analyzer.",
+        "dev:build:clean": "Cleans the build/ directory.",
+        "dev:lint": "Runs all linting checks.",
+        "dev:lint:fix": "Auto-fixes coding standards issues, if possible.",
+        "dev:lint:style": "Checks for coding standards issues.",
+        "dev:lint:syntax": "Checks for syntax errors.",
+        "dev:test": "Runs linting, static analysis, and unit tests.",
+        "dev:test:coverage:ci": "Runs unit tests and generates CI coverage reports.",
+        "dev:test:coverage:html": "Runs unit tests and generates HTML coverage report.",
+        "dev:test:unit": "Runs unit tests.",
+        "test": "Runs linting, static analysis, and unit tests."
     }
 }
