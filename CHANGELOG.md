@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.3.0 - 2025-03-30
+
+* Set the minimum supported version of PHP to 7.4
+* Certify support for PHP up to version 8.4
+* Define type declarations for all parameters and return values
+
 ## 2.2.0 - 2016-02-09
 
 * Remove namespaced folder in accordance with PSR-4. _This does not change functionality or affect code using this library in any way._
