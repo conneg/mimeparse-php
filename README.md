@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/conneg/mimeparse-php"><img src="https://img.shields.io/badge/source-conneg/mimeparse--php-blue.svg?style=flat-square" alt="Source Code"></a>
+    <a href="https://github.com/conneg/mimeparse-php"><img src="https://img.shields.io/badge/source-bitworking/mimeparse-blue.svg?style=flat-square" alt="Source Code"></a>
     <a href="https://packagist.org/packages/bitworking/mimeparse"><img src="https://img.shields.io/packagist/v/bitworking/mimeparse.svg?style=flat-square&label=release" alt="Download Package"></a>
     <a href="https://php.net"><img src="https://img.shields.io/packagist/php-v/bitworking/mimeparse.svg?style=flat-square&colorB=%238892BF" alt="PHP Programming Language"></a>
     <a href="https://github.com/conneg/mimeparse-php/blob/main/LICENSE"><img src="https://img.shields.io/packagist/l/bitworking/mimeparse.svg?style=flat-square&colorB=darkcyan" alt="Read License"></a>
